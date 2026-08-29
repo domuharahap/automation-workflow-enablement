@@ -2992,6 +2992,15 @@ deployApp(){
       fi
       ;;
 
+    9 | i | dtpay)
+      if [[ $delete ]]; then
+        printInfo "Undeploying dtpay..."
+        undeployDtpay
+      else
+        deployDtpay
+      fi
+      ;;
+
     *)
       printWarn "Invalid selection: '$input'. Please choose a valid app identifier."
       showDeployAppUsage
@@ -3019,8 +3028,10 @@ showDeployAppUsage(){
   printInfo "[6]   f   todoapp               +       +                                   "
   printInfo "[7]   g   unguard               +       -                                   "
   printInfo "[8]   h   opentelemetry-demo    +       +    (CNCF upstream)                "
+  printInfo "[9]   i   dtpay                +       +    (dtdemo-usecase, port 8080)    "
   printInfo "----------------------------------------------------------------------------"
   printInfo "Astroshop = Dynatrace-curated demo | OpenTelemetry Demo = CNCF upstream    "
+  printInfo "JMeter load test: runJmeterTest (targets dtpay) | stop: stopJmeterTest     "
 }
 
 deleteCache(){

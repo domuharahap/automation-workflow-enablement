@@ -23,6 +23,14 @@ deployApplicationMonitoring
 # If you want to deploy your own App, just create a function in the functions.sh file and call it here.
 # deployMyCustomApp
 
+# dtpay — Java Spring Boot demo app (domuharahap/sampleusecase, image: domuharahap/dtdemo-usecase:2.3)
+# Uncomment to auto-deploy at codespace creation:
+#deployDtpay
+
+# JMeter load test against dtpay — run manually after dtpay is up:
+#   runJmeterTest       — submit the job (targets dtpay ingress URL automatically)
+#   stopJmeterTest      — cancel a running test
+
 # This step is needed, do not remove it
 # it'll verify if there are error in the logs and will show them in the greeting as well a monitoring 
 finalizePostCreation

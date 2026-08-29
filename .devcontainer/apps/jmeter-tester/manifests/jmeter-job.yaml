@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jmeter-tester
+  namespace: jmeter
+spec:
+  ttlSecondsAfterFinished: 60
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: jmeter-tester
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: jmeter-tester
+          image: domuharahap/jmeter-tester:v1.0
+          imagePullPolicy: Always
+          env:
+            - name: JVM_THREADS
+              value: "50"
+            - name: JVM_LOOPS
+              value: "-1"
+            - name: JVM_DURATION
+              value: "600"
+            # Overridden at runtime by runJmeterTest() to point at the dtpay ingress URL
+            - name: JVM_APP_URL
+              value: "dtpay.127.0.0.1.sslip.io"
+            - name: JVM_DT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dynatrace-creds
+                  key: DT_ENVIRONMENT
+                  optional: true
+            - name: JVM_DT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: dynatrace-creds
+                  key: DT_OPERATOR_TOKEN
+                  optional: true
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"

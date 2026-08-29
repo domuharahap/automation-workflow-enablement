@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dtpay
+  namespace: dtpay
+  labels:
+    app: dtpay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dtpay
+  template:
+    metadata:
+      labels:
+        app: dtpay
+    spec:
+      containers:
+        - name: dtpay
+          image: domuharahap/dtdemo-usecase:2.3
+          ports:
+            - containerPort: 8080
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xms256m -Xmx256m -XX:+ExitOnOutOfMemoryError"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dtpay
+  namespace: dtpay
+  labels:
+    app: dtpay
+spec:
+  selector:
+    app: dtpay
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
