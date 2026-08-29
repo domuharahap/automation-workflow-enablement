@@ -14,11 +14,11 @@ installK9s
 dynatraceDeployOperator
 
 # You can deploy CNFS (for CNFS use Kind) or AppOnly (use k3d)
-#deployCloudNative
+deployCloudNative
 deployApplicationMonitoring
 
 # The TODO App will be deployed as a sample
-deployTodoApp
+#deployTodoApp
 
 # If you want to deploy your own App, just create a function in the functions.sh file and call it here.
 # deployMyCustomApp
