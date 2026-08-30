@@ -31,13 +31,11 @@ spec:
                 secretKeyRef:
                   name: dynatrace-creds
                   key: DT_ENVIRONMENT
-                  optional: true
             - name: JVM_DT_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: dynatrace-creds
                   key: DT_OPERATOR_TOKEN
-                  optional: true
           resources:
             requests:
               memory: "1Gi"

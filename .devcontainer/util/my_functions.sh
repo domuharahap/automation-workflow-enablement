@@ -52,6 +52,14 @@ runJmeterTest() {
 
   kubectl create namespace jmeter 2>/dev/null || true
 
+  # Create dynatrace-creds secret in the jmeter namespace from the codespace env vars.
+  # DT_ENVIRONMENT and DT_OPERATOR_TOKEN are injected by Codespaces secrets at startup.
+  # Secrets are namespace-scoped — the dynatrace namespace secret cannot be read here.
+  kubectl -n jmeter create secret generic dynatrace-creds \
+    --from-literal="DT_ENVIRONMENT=${DT_ENVIRONMENT:-}" \
+    --from-literal="DT_OPERATOR_TOKEN=${DT_OPERATOR_TOKEN:-}" \
+    --dry-run=client -o yaml | kubectl apply -f -
+
   # Delete any prior run before re-submitting
   kubectl delete job jmeter-tester -n jmeter 2>/dev/null || true
 

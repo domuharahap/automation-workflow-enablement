@@ -15,7 +15,7 @@ dynatraceDeployOperator
 
 # You can deploy CNFS (for CNFS use Kind) or AppOnly (use k3d)
 deployCloudNative
-deployApplicationMonitoring
+#deployApplicationMonitoring
 
 # The TODO App will be deployed as a sample
 #deployTodoApp
