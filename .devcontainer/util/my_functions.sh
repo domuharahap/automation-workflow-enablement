@@ -12,20 +12,21 @@ customFunction(){
 
 }
 
-# Deploy dtpay (domuharahap/sampleusecase) — Java Spring Boot demo app on port 8080
+# Deploy dtpay — backend (dtdemos-usecase:8080) + frontend (payment-frontend:80) in namespace dtusecase
+# Frontend nginx proxies /api/ → http://dtdemos-usecase:8080 within the cluster
 deployDtpay() {
-  printInfoSection "Deploying dtpay (dtdemo-usecase)"
-  kubectl create namespace dtpay 2>/dev/null || true
-  kubectl apply -n dtpay -f "$FRAMEWORK_APPS_PATH/dtpay/manifests/dtpay.yaml"
-  waitForAllReadyPods dtpay
-  registerApp "dtpay" "dtpay" "dtpay" 8080
-  printInfo "dtpay deployed. URL: $(getAppURL dtpay)"
+  printInfoSection "Deploying dtpay: backend (dtdemos-usecase) + frontend (payment-frontend)"
+  kubectl create namespace dtusecase 2>/dev/null || true
+  kubectl apply -f "$FRAMEWORK_APPS_PATH/dtpay/manifests/dtpay.yaml"
+  waitForAllReadyPods dtusecase
+  registerApp "payment-frontend" "dtusecase" "payment-frontend" 80
+  printInfo "dtpay deployed. Frontend URL: $(getAppURL payment-frontend)"
 }
 
 undeployDtpay() {
   printInfoSection "Undeploying dtpay"
-  unregisterApp "dtpay" "dtpay"
-  kubectl delete ns dtpay --force 2>/dev/null || true
+  unregisterApp "payment-frontend" "dtusecase"
+  kubectl delete ns dtusecase --force 2>/dev/null || true
 }
 
 # Run JMeter load test against dtpay — one-shot Kubernetes Job, auto-deletes after 60s
@@ -43,7 +44,7 @@ runJmeterTest() {
   printInfoSection "Running JMeter load test against dtpay (image: domuharahap/jmeter-tester:$version)"
 
   local target_url
-  target_url=$(getAppURL "dtpay" 2>/dev/null || echo "dtpay.127.0.0.1.sslip.io")
+  target_url=$(getAppURL "payment-frontend" 2>/dev/null || echo "payment-frontend.127.0.0.1.sslip.io")
   # Strip any protocol prefix — JMeter manifest expects a bare hostname
   target_url="${target_url#http://}"
   target_url="${target_url#https://}"
