@@ -51,25 +51,14 @@ run_app_test() {
 if run_app_test "todoapp" deployTodoApp "todoapp"; then PASSED=$((PASSED + 1)); else FAILED=$((FAILED + 1)); fi
 
 # ---------------------------------------------------------------------------
-# 2. Astroshop (AMD64 only — guarded inside deployAstroshop)
-# ---------------------------------------------------------------------------
-if run_app_test "astroshop" deployAstroshop "astroshop"; then PASSED=$((PASSED + 1)); else FAILED=$((FAILED + 1)); fi
-
-# ---------------------------------------------------------------------------
-# 3. OpenTelemetry Demo (OTel demo — used by k8s-otel labs)
+# 2. OpenTelemetry Demo (OTel demo — used by k8s-otel labs)
 # ---------------------------------------------------------------------------
 if run_app_test "otel-demo" deployOpentelemetryDemo "otel-demo"; then PASSED=$((PASSED + 1)); else FAILED=$((FAILED + 1)); fi
 
 # ---------------------------------------------------------------------------
-# 4. AI Travel Advisor (gen-ai lab) — requires DT_LLM_TOKEN; skip if absent
+# 3. dtpay — payment usecase (backend + frontend + nginx)
 # ---------------------------------------------------------------------------
-if [[ -z "$DT_LLM_TOKEN" ]]; then
-  printWarn "Skipping aitraveladvisor — DT_LLM_TOKEN not set"
-elif run_app_test "aitraveladvisor" deployAITravelAdvisorApp "aitraveladvisor"; then
-  PASSED=$((PASSED + 1))
-else
-  FAILED=$((FAILED + 1))
-fi
+if run_app_test "payment-frontend" deployDtpay "payment-frontend"; then PASSED=$((PASSED + 1)); else FAILED=$((FAILED + 1)); fi
 
 # ---------------------------------------------------------------------------
 # Summary
