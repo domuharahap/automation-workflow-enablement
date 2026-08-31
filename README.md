@@ -1,46 +1,112 @@
 <!-- markdownlint-disable-next-line -->
-# <img src="https://cdn.bfldr.com/B686QPH3/at/w5hnjzb32k5wcrcxnwcx4ckg/Dynatrace_signet_RGB_HTML.svg?auto=webp&format=pngg" alt="DT logo" width="45"> Dynatrace Enablement Framework
+# <img src="https://cdn.bfldr.com/B686QPH3/at/w5hnjzb32k5wcrcxnwcx4ckg/Dynatrace_signet_RGB_HTML.svg?auto=webp&format=pngg" alt="DT logo" width="45"> dtpay — Payment Observability Workshop
 
-[![Dynatrace](https://img.shields.io/badge/Dynatrace-Intelligence-purple?logo=dynatrace&logoColor=white)](https://dynatrace-wwse.github.io/codespaces-framework/dynatrace-integration/#mcp-server-integration)
-[![Mastering](https://img.shields.io/badge/Mastering-Complexity-8A2BE2?logo=dynatrace)](https://dynatrace-wwse.github.io)
-[![Downloads](https://img.shields.io/docker/pulls/shinojosa/dt-enablement?logo=docker)](https://hub.docker.com/r/shinojosa/dt-enablement)
-[![Integration tests](https://github.com/dynatrace-wwse/codespaces-framework/actions/workflows/integration-tests.yaml/badge.svg)](https://github.com/dynatrace-wwse/codespaces-framework/actions)
-[![Version](https://img.shields.io/github/v/release/dynatrace-wwse/codespaces-framework?color=blueviolet)](https://github.com/dynatrace-wwse/codespaces-framework/releases)
-[![Commits](https://img.shields.io/github/commits-since/dynatrace-wwse/codespaces-framework/latest?color=ff69b4&include_prereleases)](https://github.com/dynatrace-wwse/codespaces-framework/graphs/commit-activity)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?color=green)](https://github.com/dynatrace-wwse/codespaces-framework/blob/main/LICENSE)
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-green)](https://dynatrace-wwse.github.io/codespaces-framework/)
-
+[![Dynatrace](https://img.shields.io/badge/Dynatrace-Observability-purple?logo=dynatrace&logoColor=white)](https://github.com/domuharahap/dynatrace-jmeter-enablement)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?color=green)](https://github.com/domuharahap/dynatrace-jmeter-enablement/blob/main/LICENSE)
+[![Docker](https://img.shields.io/badge/Image-shinojosa%2Fdt--enablement-blue?logo=docker)](https://hub.docker.com/r/shinojosa/dt-enablement)
 
 ___
 
-
-The Dynatrace Enablement Framework streamlines the delivery of demos and hands-on trainings for the Dynatrace Platform. It provides a unified set of tools, templates, and best practices to ensure trainings are easy to create, run anywhere, and maintain over time.
-
-
+A hands-on observability workshop built on the [Dynatrace Enablement Framework](https://dynatrace-wwse.github.io/codespaces-framework). This repo demonstrates end-to-end observability of a Kubernetes-native payment application (**dtpay**) using Dynatrace, with realistic load generation powered by a versioned **JMeter** tester that sends Business Events directly to Dynatrace.
 
 <p align="center">
   <img src="docs/img/framework_banner.png" alt="DT Enablement Framework">
 </p>
 
-
-This repository is the source of truth for the framework: the container image, sync CLI, core shell functions, and templates that power every enablement lab.
-
 ___
 
-### What's included
+## What's in this repo
 
-- **Container image** — Pre-built dev environment with Kind, kubectl, Helm, and Dynatrace CLI tools (`shinojosa/dt-enablement`)
-- **Sync CLI** — Manages versioned updates, migrations, PRs, tagging, and releases across all consumer repos
-- **Versioned pull model** — Each repo pins a `FRAMEWORK_VERSION` and pulls core functions from a cached release at startup
-- **MkDocs documentation** — Shared base config with RUM tracking, auto-deployed to GitHub Pages
-- **Integration tests** — CI pipeline that validates the framework inside a real Codespace environment
+| Component | Description |
+|---|---|
+| **dtpay** | Payment demo app — Java Spring Boot backend + React/nginx frontend, deployed to Kubernetes (`dtusecase` namespace) |
+| **JMeter tester** | Containerized Apache JMeter (v1.0 – v2.0) targeting dtpay with progressive Dynatrace integration |
+| **Framework functions** | Core shell library for cluster management, ingress, app registry, and Dynatrace credential handling |
+| **my_functions.sh** | Repo-specific functions: `deployDtpay`, `undeployDtpay`, `runJmeterTest`, `stopJmeterTest` |
 
-### Enablement registry
+## Architecture
 
-Browse all available labs, demos, and workshops with live CI status and documentation links:
+```
+Browser
+  │
+  ▼
+payment-frontend (nginx, port 80)    ← registered at payment-frontend.<ip>.sslip.io
+  │  nginx ConfigMap proxies:
+  │  location /api → http://backend-services:8080
+  │
+  ▼
+backend-services (Java Spring Boot, port 8080)
+```
 
-**[dynatrace-wwse.github.io](https://dynatrace-wwse.github.io)**
+JMeter runs as a Kubernetes Job in the `jmeter` namespace and sends load to the dtpay ingress URL, with Dynatrace Business Events for observability of test runs.
 
-### Documentation
+## Quick start
 
-**[📖 Full documentation and architecture](https://dynatrace-wwse.github.io/codespaces-framework)**
+```bash
+# 1. Open in GitHub Codespaces or VS Code Dev Container
+# 2. Start a Kubernetes cluster
+startCluster
+
+# 3. Deploy dtpay
+deployDtpay
+
+# 4. Run a JMeter load test against dtpay
+runJmeterTest v1.4          # v1.0 | v1.2 | v1.3 | v1.4 | v2.0
+
+# 5. Stop the test
+stopJmeterTest
+
+# 6. Tear down dtpay
+undeployDtpay
+```
+
+Or use the interactive deploy menu:
+
+```bash
+deployApp           # shows the full menu
+deployApp 5         # deploy dtpay
+deployApp 5 -d      # undeploy dtpay
+```
+
+## Available apps
+
+| # | Name | Notes |
+|---|---|---|
+| 1 | bugzapper | Lightweight debug game |
+| 2 | todoapp | Simple Java todo app |
+| 3 | unguard | Security demo (AMD64 only) |
+| 4 | opentelemetry-demo | CNCF upstream OTel demo |
+| **5** | **dtpay** | **Payment use case — primary focus of this repo** |
+
+## JMeter versions
+
+| Version | Image | What's new |
+|---|---|---|
+| v1.0 | `domuharahap/jmeter-tester:v1.0` | Basic load test |
+| v1.2 | `domuharahap/jmeter-tester:v1.2` | `x-dynatrace-test` request marking header |
+| v1.3 | `domuharahap/jmeter-tester:v1.3` | BizEvents at test start and end |
+| v1.4 | `domuharahap/jmeter-tester:v1.4` | v1.3 + live stats BizEvent every 30 s |
+| v2.0 | `domuharahap/jmeter-tester:v2.0` | Extended scenarios |
+
+## Documentation
+
+| Doc | Description |
+|---|---|
+| [dtpay](docs/dtpay.md) | Architecture, Kubernetes resources, nginx config, deploy steps |
+| [JMeter](docs/jmeter.md) | Version matrix, config variables, BizEvents, DQL queries |
+| [Framework functions](docs/functions.md) | Full shell function reference |
+| [Framework architecture](docs/framework.md) | Versioned pull model, file classification, image tiers |
+
+## Docker images
+
+| Image | Tag | Description |
+|---|---|---|
+| `domuharahap/dtdemo-usecase` | `backend.x.x` | Java Spring Boot payment backend |
+| `domuharahap/dtdemo-usecase` | `frontend.x.x` | React UI + nginx reverse proxy |
+| `domuharahap/jmeter-tester` | `v1.0` – `v2.0` | JMeter load tester with Dynatrace integration |
+
+## Source repos
+
+- Frontend: [github.com/domuharahap/sampleusecase-dtpay-frontend](https://github.com/domuharahap/sampleusecase-dtpay-frontend)
+- JMeter: [github.com/domuharahap/jmeter-tester](https://github.com/domuharahap/jmeter-tester)
+- Framework base: [github.com/dynatrace-wwse/codespaces-framework](https://github.com/dynatrace-wwse/codespaces-framework)
