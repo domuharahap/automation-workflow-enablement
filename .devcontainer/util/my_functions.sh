@@ -12,12 +12,12 @@ customFunction(){
 
 }
 
-# Deploy dtpay — backend (dtdemos-usecase:8080) + frontend (payment-frontend:80) in namespace dtusecase
-# Frontend nginx proxies /api/ → http://dtdemos-usecase:8080 within the cluster
+# Deploy dtpay — backend (backend-services:8080) + frontend (payment-frontend:80) in namespace dtusecase
+# Frontend nginx (ConfigMap: frontend-nginx-config) proxies /api → http://backend-services:8080 within the cluster
 deployDtpay() {
   printInfoSection "Deploying dtpay: backend (dtdemos-usecase) + frontend (payment-frontend)"
   kubectl create namespace dtusecase 2>/dev/null || true
-  kubectl apply -f "$FRAMEWORK_APPS_PATH/dtpay/manifests/dtpay.yaml"
+  kubectl -n dtusecase apply -f "$FRAMEWORK_APPS_PATH/dtpay/manifests/dtpay.yaml"
   waitForAllReadyPods dtusecase
   registerApp "payment-frontend" "dtusecase" "payment-frontend" 80
   printInfo "dtpay deployed. Frontend URL: $(getAppURL payment-frontend)"
