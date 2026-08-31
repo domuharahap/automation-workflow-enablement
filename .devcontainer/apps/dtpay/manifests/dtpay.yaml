@@ -2,51 +2,54 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dtdemos-usecase
-  namespace: dtusecase
+  creationTimestamp: null
   labels:
-    app: dtdemos-usecase
+    app: backend-usecase
+  name: backend-usecase
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dtdemos-usecase
+      app: backend-usecase
+  strategy: {}
   template:
     metadata:
+      creationTimestamp: null
       labels:
-        app: dtdemos-usecase
+        app: backend-usecase
     spec:
       containers:
-        - name: dtdemos-usecase
-          image: domuharahap/dtdemo-usecase:2.3
-          ports:
-            - containerPort: 8080
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-Xms256m -Xmx256m -XX:+ExitOnOutOfMemoryError"
+        - image: domuharahap/dtdemo-usecase:backend.4.2
+          name: backend-usecase
           resources:
+            limits:
+              memory: "512Mi"  # Set memory limit
+              cpu: "500m" # Set the CPU limit to 500 milliCPU
             requests:
               memory: "256Mi"
               cpu: "250m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
+          env:
+            - name: JAVA_OPTS
+              value: >
+                -Xms256m
+                -Xmx256m
+                -XX:+ExitOnOutOfMemoryError
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: dtdemos-usecase
-  namespace: dtusecase
+  creationTimestamp: null
   labels:
-    app: dtdemos-usecase
+    app: backend-usecase
+  name: backend-services
 spec:
-  selector:
-    app: dtdemos-usecase
   ports:
-    - protocol: TCP
-      port: 8080
+    - port: 8080
+      protocol: TCP
       targetPort: 8080
   type: ClusterIP
+  selector:
+    app: backend-usecase  
 ---
 # Frontend — Nginx reverse proxy + React UI (payment-frontend)
 apiVersion: apps/v1
@@ -68,19 +71,19 @@ spec:
     spec:
       containers:
         - name: payment-frontend
-          image: domuharahap/dtdemo-usecase:payment-frontend.1.0
+          image: domuharahap/dtdemo-usecase:frontend.4.2
           ports:
             - containerPort: 80
           env:
             - name: API_BASE_URL
-              value: "http://dtdemos-usecase"
+              value: "http://backend-services"
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "100m"
-            limits:
               memory: "128Mi"
-              cpu: "200m"
+              cpu: "128m"
+            limits:
+              memory: "512Mi"
+              cpu: "512m"
 ---
 apiVersion: v1
 kind: Service
