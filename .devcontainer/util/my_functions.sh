@@ -71,11 +71,13 @@ runJmeterTest() {
   # Delete any prior run before re-submitting
   kubectl delete job jmeter-tester -n jmeter 2>/dev/null || true
 
-  kubectl apply -n jmeter -f "$FRAMEWORK_APPS_PATH/jmeter-tester/manifests/jmeter-job.yaml"
-
-  # Patch image version and target URL at runtime
-  kubectl set image job/jmeter-tester -n jmeter jmeter-tester="domuharahap/jmeter-tester:$version"
-  kubectl set env job/jmeter-tester -n jmeter JVM_APP_URL="$target_url"
+  # Patch image and env vars locally before applying — Job spec.template is immutable
+  # once created, so all overrides must be baked in before the first kubectl apply.
+  local manifest="$FRAMEWORK_APPS_PATH/jmeter-tester/manifests/jmeter-job.yaml"
+  kubectl set image --local -f "$manifest" \
+    jmeter-tester="domuharahap/jmeter-tester:$version" -o yaml \
+    | kubectl set env --local -f - JVM_APP_URL="$target_url" -o yaml \
+    | kubectl apply -n jmeter -f -
 
   printInfo "JMeter job submitted (version $version, target: $target_url). Waiting for pod to start..."
 
