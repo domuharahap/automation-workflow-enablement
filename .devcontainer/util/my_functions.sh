@@ -30,10 +30,13 @@ undeployDtpay() {
 }
 
 # Run JMeter load test against dtpay — one-shot Kubernetes Job, auto-deletes after 60s
-# Usage: runJmeterTest [version]
+# Usage: runJmeterTest [version] [app_url]
 #   version: v1.0 (default), v1.2, v1.3, v1.4, v2.0
+#   app_url: bare hostname to override JVM_APP_URL (e.g. payment-frontend.dtusecase.svc.cluster.local)
+#            defaults to auto-detected ingress URL via getAppURL
 runJmeterTest() {
   local version="${1:-v1.0}"
+  local app_url_override="${2:-}"
   local valid_versions="v1.0 v1.2 v1.3 v1.4 v2.0"
 
   if ! echo "$valid_versions" | grep -qw "$version"; then
@@ -44,12 +47,16 @@ runJmeterTest() {
   printInfoSection "Running JMeter load test against dtpay (image: domuharahap/jmeter-tester:$version)"
 
   local target_url
-  target_url=$(getAppURL "payment-frontend" 2>/dev/null || echo "payment-frontend.127.0.0.1.sslip.io")
-  # Strip any protocol prefix — JMeter manifest expects a bare hostname
-  target_url="${target_url#http://}"
-  target_url="${target_url#https://}"
-
-  printInfo "JMeter target URL: $target_url"
+  if [ -n "$app_url_override" ]; then
+    target_url="$app_url_override"
+    printInfo "JMeter target URL (override): $target_url"
+  else
+    target_url=$(getAppURL "payment-frontend" 2>/dev/null || echo "payment-frontend.127.0.0.1.sslip.io")
+    # Strip any protocol prefix — JMeter manifest expects a bare hostname
+    target_url="${target_url#http://}"
+    target_url="${target_url#https://}"
+    printInfo "JMeter target URL (auto-detected): $target_url"
+  fi
 
   kubectl create namespace jmeter 2>/dev/null || true
 
@@ -70,11 +77,34 @@ runJmeterTest() {
   kubectl set image job/jmeter-tester -n jmeter jmeter-tester="domuharahap/jmeter-tester:$version"
   kubectl set env job/jmeter-tester -n jmeter JVM_APP_URL="$target_url"
 
-  printInfo "JMeter job submitted (version $version). Waiting for completion (up to 15 min)..."
-  kubectl wait --for=condition=complete job/jmeter-tester -n jmeter --timeout=900s \
-    && printInfo "JMeter test completed successfully." \
-    || printWarn "JMeter job timed out or failed — check: kubectl logs -n jmeter -l app=jmeter-tester"
-  printInfo "The job namespace will be auto-cleaned 60s after completion."
+  printInfo "JMeter job submitted (version $version, target: $target_url). Waiting for pod to start..."
+
+  # Wait up to 2 minutes for the pod to reach Running state
+  local timeout=120
+  local elapsed=0
+  local pod_phase=""
+  local pod_name=""
+  while [ $elapsed -lt $timeout ]; do
+    pod_name=$(kubectl get pod -n jmeter -l app=jmeter-tester -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+    if [ -n "$pod_name" ]; then
+      pod_phase=$(kubectl get pod -n jmeter "$pod_name" -o jsonpath='{.status.phase}' 2>/dev/null)
+      if [ "$pod_phase" = "Running" ]; then
+        break
+      fi
+    fi
+    sleep 3
+    elapsed=$(( elapsed + 3 ))
+  done
+
+  if [ "$pod_phase" = "Running" ]; then
+    printInfo "JMeter test is RUNNING (pod: $pod_name, target: $target_url)"
+    printInfo "Follow logs: kubectl logs -n jmeter $pod_name --follow"
+    printInfo "Stop test:   stopJmeterTest"
+    printInfo "The job will auto-delete 60s after completion."
+  else
+    printWarn "Pod did not reach Running state within ${timeout}s (phase: ${pod_phase:-unknown})"
+    printWarn "Check: kubectl describe pod -n jmeter -l app=jmeter-tester"
+  fi
 }
 
 stopJmeterTest() {
