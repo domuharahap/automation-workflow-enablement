@@ -64,8 +64,18 @@ runJmeterTest() {
   # Create dynatrace-creds secret in the jmeter namespace from the codespace env vars.
   # DT_ENVIRONMENT and DT_OPERATOR_TOKEN are injected by Codespaces secrets at startup.
   # Secrets are namespace-scoped — the dynatrace namespace secret cannot be read here.
+
+  # Normalize DT_ENVIRONMENT: strip trailing slash, replace .apps.dynatrace.com → .live.dynatrace.com
+  local dt_env="${DT_ENVIRONMENT:-}"
+  dt_env="${dt_env%/}"
+  if echo "$dt_env" | grep -q '\.apps\.dynatrace\.com'; then
+    local dt_env_fixed="${dt_env/.apps.dynatrace.com/.live.dynatrace.com}"
+    printWarn "DT_ENVIRONMENT uses 'apps' domain — rewriting to 'live': $dt_env_fixed"
+    dt_env="$dt_env_fixed"
+  fi
+
   kubectl -n jmeter create secret generic dynatrace-creds \
-    --from-literal="DT_ENVIRONMENT=${DT_ENVIRONMENT:-}" \
+    --from-literal="DT_ENVIRONMENT=${dt_env}" \
     --from-literal="DT_OPERATOR_TOKEN=${DT_OPERATOR_TOKEN:-}" \
     --dry-run=client -o yaml | kubectl apply -f -
 
