@@ -48,7 +48,8 @@ runJmeterTest() {
 
   local target_url
   if [ -n "$app_url_override" ]; then
-    target_url="$app_url_override"
+    target_url="${app_url_override#http://}"
+    target_url="${target_url#https://}"
     printInfo "JMeter target URL (override): $target_url"
   else
     target_url=$(getAppURL "payment-frontend" 2>/dev/null || echo "payment-frontend.127.0.0.1.sslip.io")

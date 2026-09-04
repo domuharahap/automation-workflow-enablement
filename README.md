@@ -3,14 +3,14 @@
 
 [![Dynatrace](https://img.shields.io/badge/Dynatrace-Observability-purple?logo=dynatrace&logoColor=white)](https://github.com/domuharahap/dynatrace-jmeter-enablement)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?color=green)](https://github.com/domuharahap/dynatrace-jmeter-enablement/blob/main/LICENSE)
-[![Docker](https://img.shields.io/badge/Image-shinojosa%2Fdt--enablement-blue?logo=docker)](https://hub.docker.com/r/shinojosa/dt-enablement)
+[![Docker](https://img.shields.io/badge/Image-shinojosa%2Fdt--enablement-blue?logo=docker)](https://hub.docker.com/r/domuharahap/jmeter-tester)
 
 ___
 
 A hands-on observability workshop built on the [Dynatrace Enablement Framework](https://dynatrace-wwse.github.io/codespaces-framework). This repo demonstrates end-to-end observability of a Kubernetes-native payment application (**dtpay**) using Dynatrace, with realistic load generation powered by a versioned **JMeter** tester that sends Business Events directly to Dynatrace.
 
 <p align="center">
-  <img src="docs/img/framework_banner.png" alt="DT Enablement Framework">
+  <img src="docs/img/framework_banner.png" alt="DT Enablement">
 </p>
 
 ___
