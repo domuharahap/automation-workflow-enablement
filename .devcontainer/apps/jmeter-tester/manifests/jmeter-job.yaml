@@ -4,7 +4,7 @@ metadata:
   name: jmeter-tester
   namespace: jmeter
 spec:
-  ttlSecondsAfterFinished: 60
+  ttlSecondsAfterFinished: 120
   backoffLimit: 0
   template:
     metadata:
