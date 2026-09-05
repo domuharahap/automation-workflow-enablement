@@ -1,6 +1,6 @@
 # dtpay — Payment Use Case
 
-dtpay is a Kubernetes-native payment demo application used for observability workshops. It consists of a Java Spring Boot backend and a React/TypeScript frontend served by nginx, deployed together in the `dtusecase` namespace.
+dtpay is a Kubernetes-native payment demo application used for observability workshops. It consists of a Java Spring Boot backend and a React/TypeScript frontend served by nginx, deployed together in the same namespace.
 
 ---
 
