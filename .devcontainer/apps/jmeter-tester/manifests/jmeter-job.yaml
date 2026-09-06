@@ -4,7 +4,7 @@ metadata:
   name: jmeter-tester
   namespace: jmeter
 spec:
-  ttlSecondsAfterFinished: 600 //Change back the value to 60 after testing
+  ttlSecondsAfterFinished: 600 #Change back the value to 60 after testing
   backoffLimit: 0
   template:
     metadata:
@@ -12,7 +12,7 @@ spec:
         app: jmeter-tester
     spec:
       restartPolicy: Never
-      terminationGracePeriodSeconds: 120 //change to 60 after testing
+      terminationGracePeriodSeconds: 120 #change to 60 after testing
       containers:
         - name: jmeter-tester
           image: domuharahap/jmeter-tester:v1.0

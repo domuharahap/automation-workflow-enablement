@@ -45,13 +45,13 @@ JMeter runs as a Kubernetes Job in the `jmeter` namespace and sends load to the 
 ```bash
 # 1. Open in GitHub Codespaces or VS Code Dev Container
 # 2. Start a Kubernetes cluster
-startCluster
+startCluster # Skip this steps as the cluster has automatic start
 
 # 3. Deploy dtpay
 deployDtpay
 
 # 4. Run a JMeter load test against dtpay
-runJmeterTest v1.4          # v1.0 | v1.2 | v1.3 | v1.4 | v2.0
+runJmeterTest v1.4 your-codespaces-generated-id-80.app.github.dev  # v1.0 | v1.2 | v1.3 | v2.0
 
 # 5. Stop the test
 stopJmeterTest
@@ -85,8 +85,7 @@ deployApp 5 -d      # undeploy dtpay
 | v1.0 | `domuharahap/jmeter-tester:v1.0` | Basic load test |
 | v1.2 | `domuharahap/jmeter-tester:v1.2` | `x-dynatrace-test` request marking header |
 | v1.3 | `domuharahap/jmeter-tester:v1.3` | BizEvents at test start and end |
-| v1.4 | `domuharahap/jmeter-tester:v1.4` | v1.3 + live stats BizEvent every 30 s |
-| v2.0 | `domuharahap/jmeter-tester:v2.0` | Extended scenarios |
+| v2.0 | `domuharahap/jmeter-tester:v2.0` | v2.0 + live stats BizEvent every 30 s & Extended scenarios |
 
 ## Documentation
 
