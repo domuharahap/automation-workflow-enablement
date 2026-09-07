@@ -132,7 +132,7 @@ These workloads intentionally trigger the failure scenarios that the automation 
 ### Step 4.1 — Stuck pod simulation
 
 ```bash
-kubectl apply -f apps/podtermination/manifest/podtermination-usecase.yaml
+kubectl apply -f .devcontainer/apps/podtermination/manifest/podtermination-usecase.yaml
 ```
 
 This creates a `busybox` pod named `stuck-pod` with a `preStop` hook that sleeps 300 seconds, simulating a pod stuck in `Terminating` state.
@@ -140,7 +140,7 @@ This creates a `busybox` pod named `stuck-pod` with a `preStop` hook that sleeps
 ### Step 4.2 — dtpay application OOM usecase
 
 ```bash
-kubectl apply -f apps/dtpay/manifest/dtpay.yaml
+kubectl apply -f .devcontainer/apps/dtpay/manifest/dtpay.yaml
 ```
 
 This deploys `dtpay applications` in the dtpay namespace. The container is configured with:
@@ -255,8 +255,7 @@ Validate in Dynatrace:
 To remove the simulation workloads:
 
 ```bash
-kubectl delete -f oom-usecase-deployment.yaml
-kubectl delete -f oom-usecase-svc.yaml
+kubectl delete -f .devcontainer/apps/dtpay/manifest/dtpay.yaml
 kubectl delete pod stuck-pod --force --grace-period=0 2>/dev/null || true
 ```
 
