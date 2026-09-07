@@ -129,25 +129,26 @@ The EdgeConnect pod should reach `Running` state within ~60 seconds. It will reg
 
 These workloads intentionally trigger the failure scenarios that the automation workflows will remediate.
 
-### Step 4.1 — OOM demo app
+### Step 4.1 — Stuck pod simulation
 
 ```bash
-kubectl apply -f oom-usecase-deployment.yaml
-kubectl apply -f oom-usecase-svc.yaml
+kubectl apply -f apps/podtermination/manifest/podtermination-usecase.yaml
 ```
 
-This deploys `dtdemo-usecase` in the default namespace. The container is configured with:
+This creates a `busybox` pod named `stuck-pod` with a `preStop` hook that sleeps 300 seconds, simulating a pod stuck in `Terminating` state.
+
+### Step 4.2 — dtpay application OOM usecase
+
+```bash
+kubectl apply -f apps/dtpay/manifest/dtpay.yaml
+```
+
+This deploys `dtpay applications` in the dtpay namespace. The container is configured with:
 - Memory limit: `512Mi`
 - JVM flag: `-XX:+ExitOnOutOfMemoryError`
 - A load endpoint that allocates memory until the pod crashes
 
-### Step 4.2 — Stuck pod simulation
 
-```bash
-kubectl apply -f podtermination-usecase.yaml
-```
-
-This creates a `busybox` pod named `stuck-pod` with a `preStop` hook that sleeps 300 seconds, simulating a pod stuck in `Terminating` state.
 
 ### Step 4.3 — Verify workloads are running
 
@@ -189,7 +190,33 @@ Open `[use-case automation] - K8s Pod Cleanup`:
 
 ---
 
-## Part 6 — Use Case 1: OOM Remediation (Approval-Gated)
+## Part 6 — Use Case 1: Stuck Pod Cleanup (Zero-Touch)
+
+### Trigger the stuck pod scenario
+
+Delete the pod — it will enter `Terminating` state and hang for 5 minutes due to the `preStop` hook:
+
+```bash
+kubectl delete pod stuck-pod
+kubectl get pod stuck-pod -w
+```
+
+### Watch the zero-touch workflow execute
+
+1. Davis AI detects `Pods stuck in terminating`
+2. The workflow fires automatically — no approval required
+3. The `delete_pod` task force-deletes the stuck pod via the EdgeConnect K8s connector
+
+Validate in Dynatrace:
+- **Automations > Workflows** — check the `K8s Pod Cleanup` execution history
+- The pod should be gone:
+  ```bash
+  kubectl get pod stuck-pod
+  ```
+
+---
+
+## Part 7 — Use Case 2: dtpay OOM Remediation (Approval-Gated)
 
 ### Trigger the OOM
 
@@ -220,32 +247,6 @@ Open `[use-case automation] - K8s Pod Cleanup`:
 Validate in Dynatrace:
 - **Automations > Workflows** — check execution history and task states
 - **Infrastructure > Kubernetes** — verify the deployment restarted
-
----
-
-## Part 7 — Use Case 2: Stuck Pod Cleanup (Zero-Touch)
-
-### Trigger the stuck pod scenario
-
-Delete the pod — it will enter `Terminating` state and hang for 5 minutes due to the `preStop` hook:
-
-```bash
-kubectl delete pod stuck-pod
-kubectl get pod stuck-pod -w
-```
-
-### Watch the zero-touch workflow execute
-
-1. Davis AI detects `Pods stuck in terminating`
-2. The workflow fires automatically — no approval required
-3. The `delete_pod` task force-deletes the stuck pod via the EdgeConnect K8s connector
-
-Validate in Dynatrace:
-- **Automations > Workflows** — check the `K8s Pod Cleanup` execution history
-- The pod should be gone:
-  ```bash
-  kubectl get pod stuck-pod
-  ```
 
 ---
 
