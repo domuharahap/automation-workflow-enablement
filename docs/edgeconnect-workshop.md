@@ -14,8 +14,8 @@ EdgeConnect acts as a secure reverse-tunnel between Dynatrace and your Kubernete
 
 | # | Use Case | Trigger | Remediation | Mode |
 |---|---|---|---|---|
-| 1 | OOM / Memory Exhausted | App hits memory limit and crashes | `kubectl rollout restart` the deployment | Approval-gated |
-| 2 | Stuck Terminating Pod | Pod stuck in `Terminating` > 5 min | Force-delete the pod via K8s API | Zero-touch |
+| 1 | Stuck Terminating Pod | Pod stuck in `Terminating` > 5 min | Force-delete the pod via K8s API | Zero-touch |
+| 2 | OOM / Memory Exhausted | App hits memory limit and crashes | `kubectl rollout restart` the deployment | Approval-gated |
 
 ---
 
