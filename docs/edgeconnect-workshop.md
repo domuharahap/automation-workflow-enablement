@@ -82,7 +82,7 @@ The `edgeconnect.yaml` manifest in `.devcontainer/apps/edgeconnect/` is pre-popu
 ### Step 3.1 — Navigate to the EdgeConnect app folder
 
 ```bash
-cd .devcontainer/apps/edgeconnect
+cd .devcontainer/apps
 ```
 
 ### Step 3.2 — Verify the generated manifest
@@ -90,7 +90,7 @@ cd .devcontainer/apps/edgeconnect
 The `edgeconnect.yaml` file has placeholders (`DT_CLIENT_ID`, `DT_CLIENT_SECRET`, `DT_ENVIRONMENT`, `DT_URN_ACCOUNT`) that are replaced at startup. Verify they were substituted:
 
 ```bash
-cat edgeconnect.yaml
+cat edgeconnect/edgeconnect.yaml
 ```
 
 You should see your actual `dt0s02.XXXX` values and your environment URL — not the placeholder names.
@@ -98,7 +98,7 @@ You should see your actual `dt0s02.XXXX` values and your environment URL — not
 ### Step 3.3 — Apply the manifest
 
 ```bash
-kubectl apply -f edgeconnect.yaml
+kubectl apply -f edgeconnect/edgeconnect.yaml
 ```
 
 This creates:
@@ -132,7 +132,8 @@ These workloads intentionally trigger the failure scenarios that the automation 
 ### Step 4.1 — Stuck pod simulation
 
 ```bash
-kubectl apply -f .devcontainer/apps/podtermination/manifest/podtermination-usecase.yaml
+kubectl create ns dtusecase
+kubectl -n dtusecase apply -f podtermination/podtermination-usecase.yaml
 ```
 
 This creates a `busybox` pod named `stuck-pod` with a `preStop` hook that sleeps 300 seconds, simulating a pod stuck in `Terminating` state.
@@ -140,8 +141,16 @@ This creates a `busybox` pod named `stuck-pod` with a `preStop` hook that sleeps
 ### Step 4.2 — dtpay application OOM usecase
 
 ```bash
-kubectl apply -f .devcontainer/apps/dtpay/manifest/dtpay.yaml
+kubectl create ns dtpay
+kubectl -n dtpay apply -f dtpay/manifests/dtpay.yaml
 ```
+
+or you can run below command
+
+```bash
+deployDtpay
+```
+
 
 This deploys `dtpay applications` in the dtpay namespace. The container is configured with:
 - Memory limit: `512Mi`
@@ -149,12 +158,11 @@ This deploys `dtpay applications` in the dtpay namespace. The container is confi
 - A load endpoint that allocates memory until the pod crashes
 
 
-
 ### Step 4.3 — Verify workloads are running
 
 ```bash
 kubectl get all -n dtusecase
-kubectl get pod stuck-pod
+kubectl -n dtusecase get pod stuck-pod
 ```
 
 ---
@@ -197,8 +205,8 @@ Open `[use-case automation] - K8s Pod Cleanup`:
 Delete the pod — it will enter `Terminating` state and hang for 5 minutes due to the `preStop` hook:
 
 ```bash
-kubectl delete pod stuck-pod
-kubectl get pod stuck-pod -w
+kubectl delete pod stuck-pod -n dtusecase
+kubectl -n dtusecase get pod stuck-pod -w
 ```
 
 ### Watch the zero-touch workflow execute
@@ -211,7 +219,7 @@ Validate in Dynatrace:
 - **Automations > Workflows** — check the `K8s Pod Cleanup` execution history
 - The pod should be gone:
   ```bash
-  kubectl get pod stuck-pod
+  kubectl -n dtusecase get pod stuck-pod 
   ```
 
 ---
@@ -220,17 +228,14 @@ Validate in Dynatrace:
 
 ### Trigger the OOM
 
-1. Get the LoadBalancer URL for the demo app:
-   ```bash
-   kubectl get svc dtdemos-usecase
-   ```
+1. Get the LoadBalancer URL for the demo app:```View - Port```
 2. Open the URL in a browser or curl it to trigger the OOM scenario:
    ```bash
-   curl http://<EXTERNAL-IP>/oom
+   curl http://<EXTERNAL-IP>/usecase.html
    ```
 3. Watch the pod crash:
    ```bash
-   kubectl get pods -w
+   kubectl -n dtpay get pods -w
    ```
 
 ### Watch the workflow execute
@@ -255,14 +260,14 @@ Validate in Dynatrace:
 To remove the simulation workloads:
 
 ```bash
-kubectl delete -f .devcontainer/apps/dtpay/manifest/dtpay.yaml
-kubectl delete pod stuck-pod --force --grace-period=0 2>/dev/null || true
+kubectl -n dtpay delete -f dtpay/manifest/dtpay.yaml
+kubectl -n dtusecase delete pod stuck-pod --force --grace-period=0 2>/dev/null || true
 ```
 
 To remove EdgeConnect:
 
 ```bash
-kubectl delete -f edgeconnect.yaml
+kubectl -n dtusecase delete -f edgeconnect/edgeconnect.yaml
 ```
 
 ---

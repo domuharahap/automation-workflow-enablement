@@ -16,17 +16,17 @@ customFunction(){
 # Frontend nginx (ConfigMap: frontend-nginx-config) proxies /api → http://backend-services:8080 within the cluster
 deployDtpay() {
   printInfoSection "Deploying dtpay: backend (dtdemos-usecase) + frontend (payment-frontend)"
-  kubectl create namespace dtusecase 2>/dev/null || true
-  kubectl -n dtusecase apply -f "$FRAMEWORK_APPS_PATH/dtpay/manifests/dtpay.yaml"
-  waitForAllReadyPods dtusecase
-  registerApp "payment-frontend" "dtusecase" "payment-frontend" 80
+  kubectl create namespace dtpay 2>/dev/null || true
+  kubectl -n dtpay apply -f "$FRAMEWORK_APPS_PATH/dtpay/manifests/dtpay.yaml"
+  waitForAllReadyPods dtpay
+  registerApp "payment-frontend" "dtpay" "payment-frontend" 80
   printInfo "dtpay deployed. Frontend URL: $(getAppURL payment-frontend)"
 }
 
 undeployDtpay() {
   printInfoSection "Undeploying dtpay"
-  unregisterApp "payment-frontend" "dtusecase"
-  kubectl delete ns dtusecase --force 2>/dev/null || true
+  unregisterApp "payment-frontend" "dtpay"
+  kubectl delete ns dtpay --force 2>/dev/null || true
 }
 
 
