@@ -56,6 +56,15 @@
       },
       "DT_INGEST_TOKEN": {
         "description": "Dynatrace Ingest Token, it will be created automatically when adding a new Cluster over the UI. It contains the following permissions: 'Ingest logs' 'Ingest metrics' 'Ingest OpenTelemetry traces' "
+      },
+      "DT_CLIENT_ID": {
+        "description": "OAuth Client ID for EdgeConnect provisioning. Create an OAuth client in Dynatrace under Account Management > OAuth Clients. Format: dt0s02.XXXXXXXXXXXX"
+      },
+      "DT_CLIENT_SECRET": {
+        "description": "OAuth Client Secret for EdgeConnect provisioning. Generated alongside DT_CLIENT_ID in Account Management > OAuth Clients. Format: dt0s02.XXXXXXXXXXXX.YYYYYYYY..."
+      },
+      "DT_URN_ACCOUNT": {
+        "description": "Dynatrace Account URN for EdgeConnect OAuth resource scope. Found in Account Management. Format: urn:dtaccount:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
       }
     }
 }

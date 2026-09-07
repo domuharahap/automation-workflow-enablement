@@ -1,13 +1,12 @@
 <!-- markdownlint-disable-next-line -->
-# <img src="https://cdn.bfldr.com/B686QPH3/at/w5hnjzb32k5wcrcxnwcx4ckg/Dynatrace_signet_RGB_HTML.svg?auto=webp&format=pngg" alt="DT logo" width="45"> dtpay — Payment Observability Workshop
+# <img src="https://cdn.bfldr.com/B686QPH3/at/w5hnjzb32k5wcrcxnwcx4ckg/Dynatrace_signet_RGB_HTML.svg?auto=webp&format=pngg" alt="DT logo" width="45"> EdgeConnect — Automation Workflow Enablement
 
-[![Dynatrace](https://img.shields.io/badge/Dynatrace-Observability-purple?logo=dynatrace&logoColor=white)](https://github.com/domuharahap/dynatrace-jmeter-enablement)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?color=green)](https://github.com/domuharahap/dynatrace-jmeter-enablement/blob/main/LICENSE)
-[![Docker](https://img.shields.io/badge/Image-shinojosa%2Fdt--enablement-blue?logo=docker)](https://hub.docker.com/r/domuharahap/jmeter-tester)
+[![Dynatrace](https://img.shields.io/badge/Dynatrace-Automation-purple?logo=dynatrace&logoColor=white)](https://github.com/domuharahap/Dynatrace-EdgeConnect)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg?color=green)](LICENSE)
 
 ___
 
-A hands-on observability workshop built on the [Dynatrace Enablement Framework](https://dynatrace-wwse.github.io/codespaces-framework). This repo demonstrates end-to-end observability of a Kubernetes-native payment application (**dtpay**) using Dynatrace, with realistic load generation powered by a versioned **JMeter** tester that sends Business Events directly to Dynatrace.
+A hands-on automation workshop built on the [Dynatrace Enablement Framework](https://dynatrace-wwse.github.io/codespaces-framework). This repo demonstrates how to use **Dynatrace EdgeConnect** to enable secure Kubernetes automation — letting Dynatrace Workflows remediate incidents (OOM crashes, stuck pods) via the K8s API without exposing your cluster to the internet.
 
 <p align="center">
   <img src="docs/img/framework_banner.png" alt="DT Enablement">
@@ -19,93 +18,88 @@ ___
 
 | Component | Description |
 |---|---|
-| **dtpay** | Payment demo app — Java Spring Boot backend + React/nginx frontend, deployed to Kubernetes (`dtusecase` namespace) |
-| **JMeter tester** | Containerized Apache JMeter (v1.0 – v2.0) targeting dtpay with progressive Dynatrace integration |
+| **EdgeConnect** | Kubernetes manifests to deploy EdgeConnect with OAuth, RBAC, and `kubernetesAutomation` enabled |
+| **Simulation workloads** | OOM demo app and stuck-pod simulation to trigger automation scenarios |
+| **Automation workflows** | Dynatrace Workflow JSON exports for OOM remediation (approval-gated) and pod cleanup (zero-touch) |
 | **Framework functions** | Core shell library for cluster management, ingress, app registry, and Dynatrace credential handling |
-| **my_functions.sh** | Repo-specific functions: `deployDtpay`, `undeployDtpay`, `runJmeterTest`, `stopJmeterTest` |
 
 ## Architecture
 
 ```
-Browser
+Dynatrace Platform (Davis AI)
   │
+  │  detects event (OOM / stuck pod)
   ▼
-payment-frontend (nginx, port 80)    ← registered at payment-frontend.<ip>.sslip.io
-  │  nginx ConfigMap proxies:
-  │  location /api → http://backend-services:8080
+Automation Workflow Engine
   │
+  │  executes K8s action via EdgeConnect tunnel
   ▼
-backend-services (Java Spring Boot, port 8080)
+EdgeConnect (running in-cluster, dynatrace namespace)
+  │
+  │  forwards kubectl command to K8s API server
+  ▼
+Kubernetes Cluster (dtusecase / default namespace)
+  └── stuck-pod                  ← pod termination use case
+  └── dtdemo-usecase deployment  ← OOM use case
 ```
 
-JMeter runs as a Kubernetes Job in the `jmeter` namespace and sends load to the dtpay ingress URL, with Dynatrace Business Events for observability of test runs.
+## Use Cases
 
-## Quick start
+| # | Use Case | Trigger | Remediation | Mode |
+|---|---|---|---|---|
+| 1 | Stuck Terminating Pod | Pod stuck in `Terminating` > 5 min | Force-delete via K8s API | Zero-touch |
+| 2 | OOM / Memory Exhausted | App hits memory limit and crashes | `kubectl rollout restart` deployment | Approval-gated (Slack + email) |
+
+
+## Quick Start
 
 ```bash
-# 1. Open in GitHub Codespaces or VS Code Dev Container
-# 2. Start a Kubernetes cluster
-startCluster # Skip this steps as the cluster has automatic start
+# 1. Open in GitHub Codespaces — set all 6 secrets before launching
+#    DT_ENVIRONMENT, DT_OPERATOR_TOKEN, DT_INGEST_TOKEN
+#    DT_CLIENT_ID, DT_CLIENT_SECRET, DT_URN_ACCOUNT
 
-# 3. Deploy dtpay
-deployDtpay
+# 2. Verify the cluster and Dynatrace Operator are running
+kubectl get nodes
+kubectl get pods -n dynatrace
 
-# 4. Run a JMeter load test against dtpay
-runJmeterTest v1.4 your-codespaces-generated-id-80.app.github.dev  # v1.0 | v1.2 | v1.3 | v2.0
+# 3. Deploy EdgeConnect
+cd .devcontainer/apps/edgeconnect
+kubectl apply -f edgeconnect.yaml
 
-# 5. Stop the test
-stopJmeterTest
+# 4. Deploy the simulation workloads
+kubectl apply -f podtermination-usecase.yaml
+kubectl apply -f oom-usecase-deployment.yaml
+kubectl apply -f oom-usecase-svc.yaml
 
-# 6. Tear down dtpay
-undeployDtpay
+# 5. Import and activate workflows in Dynatrace UI
+#    → Automations > Workflows > Import workflow
+#    use-case-automation-oom-remediation-w-k8s.workflow.json
+#    use-case-automation-k8s-pod-cleanup.workflow.json
 ```
 
-Or use the interactive deploy menu:
+See [docs/edgeconnect-workshop.md](docs/edgeconnect-workshop.md) for the full step-by-step workshop guide.
 
-```bash
-deployApp           # shows the full menu
-deployApp 5         # deploy dtpay
-deployApp 5 -d      # undeploy dtpay
-```
+## Required Codespace Secrets
 
-## Available apps
-
-| # | Name | Notes |
-|---|---|---|
-| 1 | bugzapper | Lightweight debug game |
-| 2 | todoapp | Simple Java todo app |
-| 3 | unguard | Security demo (AMD64 only) |
-| 4 | opentelemetry-demo | CNCF upstream OTel demo |
-| **5** | **dtpay** | **Payment use case — primary focus of this repo** |
-
-## JMeter versions
-
-| Version | Image | What's new |
-|---|---|---|
-| v1.0 | `domuharahap/jmeter-tester:v1.0` | Basic load test |
-| v1.2 | `domuharahap/jmeter-tester:v1.2` | `x-dynatrace-test` request marking header |
-| v1.3 | `domuharahap/jmeter-tester:v1.3` | BizEvents at test start and end |
-| v2.0 | `domuharahap/jmeter-tester:v2.0` | v2.0 + live stats BizEvent every 30 s & Extended scenarios |
+| Secret | Description |
+|---|---|
+| `DT_ENVIRONMENT` | Dynatrace platform URL, e.g. `https://abc123.apps.dynatrace.com` |
+| `DT_OPERATOR_TOKEN` | Operator token (auto-created when adding a cluster in DT UI) |
+| `DT_INGEST_TOKEN` | Ingest token for logs, metrics, and traces |
+| `DT_CLIENT_ID` | OAuth Client ID for EdgeConnect provisioning — format: `dt0s02.XXXX` |
+| `DT_CLIENT_SECRET` | OAuth Client Secret paired with `DT_CLIENT_ID` |
+| `DT_URN_ACCOUNT` | Account URN for OAuth resource scope — format: `urn:dtaccount:xxxx-xxxx` |
 
 ## Documentation
 
 | Doc | Description |
 |---|---|
-| [dtpay](docs/dtpay.md) | Architecture, Kubernetes resources, nginx config, deploy steps |
-| [JMeter](docs/jmeter.md) | Version matrix, config variables, BizEvents, DQL queries |
+| [EdgeConnect Workshop](docs/edgeconnect-workshop.md) | Full step-by-step hands-on workshop guide |
 | [Framework functions](docs/functions.md) | Full shell function reference |
 | [Framework architecture](docs/framework.md) | Versioned pull model, file classification, image tiers |
 
-## Docker images
+## Source Repos
 
-| Image | Tag | Description |
-|---|---|---|
-| `domuharahap/dtdemo-usecase` | `backend.x.x` | Java Spring Boot payment backend |
-| `domuharahap/dtdemo-usecase` | `frontend.x.x` | React UI + nginx reverse proxy |
-| `domuharahap/jmeter-tester` | `v1.0` – `v2.0` | JMeter load tester with Dynatrace integration |
-
-## Source repos
-
-- Frontend: [github.com/domuharahap/sampleusecase-dtpay-frontend](https://github.com/domuharahap/sampleusecase-dtpay-frontend)
-- JMeter: [github.com/domuharahap/jmeter-tester](https://github.com/domuharahap/jmeter-tester)
+- EdgeConnect manifests & workflows: [github.com/domuharahap/Dynatrace-EdgeConnect](https://github.com/domuharahap/Dynatrace-EdgeConnect)
+- OOM demo app image: `domuharahap/dtdemo-usecase:2.2`
 - Framework base: [github.com/dynatrace-wwse/codespaces-framework](https://github.com/dynatrace-wwse/codespaces-framework)

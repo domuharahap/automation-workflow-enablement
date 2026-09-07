@@ -2772,9 +2772,9 @@ showDeployAppUsage(){
   printInfo "[2]   b   todoapp               +       +                                   "
   printInfo "[3]   c   unguard               +       -                                   "
   printInfo "[4]   d   opentelemetry-demo    +       +    (CNCF upstream)                "
-  printInfo "[5]   e   dtpay                 +       +    (payment usecase + JMeter)     "
+  printInfo "[5]   e   dtpay                 +       +    (payment usecase)              "
   printInfo "----------------------------------------------------------------------------"
-  printInfo "JMeter load test: runJmeterTest [version] (targets dtpay) | stop: stopJmeterTest"
+  printInfo "EdgeConnect automation: kubectl apply -f .devcontainer/apps/edgeconnect/edgeconnect.yaml"
 }
 
 deleteCache(){

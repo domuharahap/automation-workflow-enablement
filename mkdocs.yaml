@@ -1,11 +1,11 @@
 INHERIT: mkdocs-base.yaml
-site_name: "dtpay — Payment Observability Workshop"
+site_name: "EdgeConnect — Automation Workflow Enablement"
 repo_name: "View Code on GitHub"
-repo_url: "https://github.com/domuharahap/dynatrace-jmeter-enablement"
+repo_url: "https://github.com/domuharahap/Dynatrace-EdgeConnect"
 nav:
   - '1. Introduction': index.md
-  - '2. dtpay — Payment Use Case': dtpay.md
-  - '3. JMeter Load Tester': jmeter.md
+  - '2. EdgeConnect Workshop': edgeconnect-workshop.md
+  - '3. dtpay — Payment Use Case': dtpay.md
   - '4. Container image': container-image.md
   - '5. Instantiation types': instantiation-types.md
   - '6. Dynatrace integration': dynatrace-integration.md

@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: edgeconnect-sa
+  namespace: dynatrace
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: edgeconnect-role
+#  namespace: default
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["patch", "get", "delete"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "create", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "patch", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["patch", "get", "create", "delete"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: edgeconnect-rb
+#  namespace: default
+roleRef:
+  kind: Role
+  name: edgeconnect-role
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: edgeconnect-sa
+  namespace: dynatrace
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: edgeconnect-k8s-workshop-oauth
+  namespace: dynatrace
+stringData:
+  oauth-client-id: DT_CLIENT_ID #dt0s02.generatedID
+  oauth-client-secret: DT_CLIENT_SECRET #dt0s02.generatedID.generatedNumber
+
+---
+apiVersion: dynatrace.com/v1alpha1
+kind: EdgeConnect
+metadata:
+  name: k8s-workshop
+  namespace: dynatrace
+spec:
+  apiServer: DT_ENVIRONMENT #fno123.apps.dynatrace.com
+  serviceAccountName: edgeconnect-sa
+  oauth:
+    provisioner: true
+    clientSecret: edgeconnect-k8s-workshop-oauth
+    endpoint: https://sso.dynatrace.com/sso/oauth2/token
+    resource: DT_URN_ACCOUNT #urn:dtaccount:gen-urn-acc-no
+  kubernetesAutomation:
+    enabled: true
