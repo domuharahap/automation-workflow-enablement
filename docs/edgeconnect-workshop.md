@@ -77,38 +77,27 @@ The EdgeConnect CRD uses OAuth for provisioning. You need to create a dedicated 
 
 ## Part 3 — Deploy EdgeConnect (RBAC + CRD)
 
-The `edgeconnect.yaml` manifest in `.devcontainer/apps/edgeconnect/` is pre-populated with your secrets via the post-create script. Apply the resources in the following order.
+The `deployEdgeConnect` function reads your credentials directly from the environment variables set as Codespace secrets (`DT_CLIENT_ID`, `DT_CLIENT_SECRET`, `DT_ENVIRONMENT`, `DT_URN_ACCOUNT`), substitutes them into the manifest in memory, and applies everything in one step — no manual file editing required.
 
-### Step 3.1 — Navigate to the EdgeConnect app folder
-
-```bash
-cd .devcontainer/apps
-```
-
-### Step 3.2 — Verify the generated manifest
-
-The `edgeconnect.yaml` file has placeholders (`DT_CLIENT_ID`, `DT_CLIENT_SECRET`, `DT_ENVIRONMENT`, `DT_URN_ACCOUNT`) that are replaced at startup. Verify they were substituted:
+### Step 3.1 — Deploy EdgeConnect
 
 ```bash
-cat edgeconnect/edgeconnect.yaml
+deployEdgeConnect
 ```
 
-You should see your actual `dt0s02.XXXX` values and your environment URL — not the placeholder names.
+This function:
+1. Validates that all four required environment variables are set
+2. Strips any `https://` prefix from `DT_ENVIRONMENT` (the `apiServer` field requires hostname only)
+3. Substitutes credentials into the manifest in-memory via `sed` — nothing is written to disk
+4. Applies the manifest via `kubectl apply`, creating:
+   - `ServiceAccount` (`edgeconnect-sa`) in the `dynatrace` namespace
+   - `Role` (`edgeconnect-role`) with least-privilege pod/deployment/configmap/job/PVC access
+   - `RoleBinding` (`edgeconnect-rb`) binding the role to the service account
+   - `Secret` containing your OAuth credentials
+   - `EdgeConnect` CRD resource enabling `kubernetesAutomation`
+5. Prints the EdgeConnect resource and pod status immediately after apply
 
-### Step 3.3 — Apply the manifest
-
-```bash
-kubectl apply -f edgeconnect/edgeconnect.yaml
-```
-
-This creates:
-- `ServiceAccount` (`edgeconnect-sa`) in the `dynatrace` namespace
-- `Role` (`edgeconnect-role`) with least-privilege pod/deployment/configmap/job/PVC access
-- `RoleBinding` (`edgeconnect-rb`) binding the role to the service account
-- `Secret` containing your OAuth credentials
-- `EdgeConnect` CRD resource enabling `kubernetesAutomation`
-
-### Step 3.4 — Verify EdgeConnect is running
+### Step 3.2 — Verify EdgeConnect is running
 
 ```bash
 kubectl get edgeconnect -n dynatrace
@@ -117,7 +106,7 @@ kubectl get pods -n dynatrace | grep edgeconnect
 
 The EdgeConnect pod should reach `Running` state within ~60 seconds. It will register itself in the Dynatrace UI automatically.
 
-### Step 3.5 — Confirm registration in Dynatrace
+### Step 3.3 — Confirm registration in Dynatrace
 
 1. Open your Dynatrace environment
 2. Navigate to **Infrastructure > Kubernetes > EdgeConnect**
@@ -141,16 +130,8 @@ This creates a `busybox` pod named `stuck-pod` with a `preStop` hook that sleeps
 ### Step 4.2 — dtpay application OOM usecase
 
 ```bash
-kubectl create ns dtpay
-kubectl -n dtpay apply -f dtpay/manifests/dtpay.yaml
-```
-
-or you can run below command
-
-```bash
 deployDtpay
 ```
-
 
 This deploys `dtpay applications` in the dtpay namespace. The container is configured with:
 - Memory limit: `512Mi`
