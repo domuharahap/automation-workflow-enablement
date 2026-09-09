@@ -197,6 +197,11 @@ Open `[use case automation] oom remediation w k8s`:
 
 ### Trigger the stuck pod scenario
 
+For demo purposes simulation, change the k8s anomaly detection to triggered the active workflow:
+
+![Dynatrace Workflow pod stack running](img/pod-stack.png)
+
+
 Delete the pod — it will enter `Terminating` state and hang for 5 minutes due to the `preStop` hook:
 
 ```bash
