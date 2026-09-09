@@ -101,5 +101,5 @@ See [docs/edgeconnect-workshop.md](docs/edgeconnect-workshop.md) for the full st
 ## Source Repos
 
 - EdgeConnect manifests & workflows: [github.com/domuharahap/Dynatrace-EdgeConnect](https://github.com/domuharahap/Dynatrace-EdgeConnect)
-- OOM demo app image: `domuharahap/dtdemo-usecase:2.2`
+- OOM demo app image: `domuharahap/dtdemo-usecase:backend.4.2 and frontend.4.5`
 - Framework base: [github.com/dynatrace-wwse/codespaces-framework](https://github.com/dynatrace-wwse/codespaces-framework)
