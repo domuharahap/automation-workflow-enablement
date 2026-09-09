@@ -106,11 +106,21 @@ kubectl get pods -n dynatrace | grep edgeconnect
 
 The EdgeConnect pod should reach `Running` state within ~60 seconds. It will register itself in the Dynatrace UI automatically.
 
+![Dynatrace EdgeConnect Deployment Status](img/edgeconnect-deployment-status.png)
+
+
 ### Step 3.3 — Confirm registration in Dynatrace
 
 1. Open your Dynatrace environment
 2. Navigate to **Infrastructure > Kubernetes > EdgeConnect**
-3. You should see `k8s-workshop` listed with status **Connected**
+3. You should see `k8s-workshop` listed with status **Online**
+
+![Dynatrace EdgeConnect for v1.0](img/dynatrace-edgeconnect-status.png)
+
+4. Navigate to **Infrastructure > Kubernetes > k8s-workshop**
+5. Validate connection `k8s-workshop` listed with status **Connected**
+
+![Dynatrace EdgeConnect for v1.0](img/dynatrace-k8s-validate-status.png)
 
 ---
 
@@ -121,6 +131,7 @@ These workloads intentionally trigger the failure scenarios that the automation 
 ### Step 4.1 — Stuck pod simulation
 
 ```bash
+cd .devcontainer/apps
 kubectl create ns dtusecase
 kubectl -n dtusecase apply -f podtermination/podtermination-usecase.yaml
 ```
@@ -161,7 +172,16 @@ In the Dynatrace UI:
 
 These JSON files are available in the [reference repository](https://github.com/domuharahap/Dynatrace-EdgeConnect).
 
-### Step 5.2 — Configure the OOM workflow
+### Step 5.2 — Configure the pod cleanup workflow
+
+Open `[use-case automation] - K8s Pod Cleanup`:
+
+1. Click the **`delete_pod`** task → confirm the EdgeConnect instance is set to `k8s-workshop`
+2. Save and **Activate** the workflow
+
+![Dynatrace Workflow pod stack](img/workflow-pod-stack.png)
+
+### Step 5.3 — Configure the OOM workflow
 
 Open `[use case automation] oom remediation w k8s`:
 
@@ -170,12 +190,6 @@ Open `[use case automation] oom remediation w k8s`:
 3. Click the **`restart_deployment`** task → confirm the EdgeConnect instance is set to `k8s-workshop`
 4. Save and **Activate** the workflow
 
-### Step 5.3 — Configure the pod cleanup workflow
-
-Open `[use-case automation] - K8s Pod Cleanup`:
-
-1. Click the **`delete_pod`** task → confirm the EdgeConnect instance is set to `k8s-workshop`
-2. Save and **Activate** the workflow
 
 ---
 
@@ -202,6 +216,8 @@ Validate in Dynatrace:
   ```bash
   kubectl -n dtusecase get pod stuck-pod 
   ```
+
+![Dynatrace Workflow pod stack running](img/workflow-run-termination-success.png)
 
 ---
 

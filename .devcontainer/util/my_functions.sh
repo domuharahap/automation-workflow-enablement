@@ -67,6 +67,14 @@ deployEdgeConnect() {
   printInfo "EdgeConnect deployed. It will register as 'k8s-workshop' in Dynatrace > Infrastructure > Kubernetes > EdgeConnect"
 }
 
+undeployEdgeConnect() {
+  [ -z "$FRAMEWORK_APPS_PATH" ] && { echo "❌ source_framework.sh not loaded — run 'source .devcontainer/util/source_framework.sh' first"; return 1; }
+
+  printInfoSection "Undeploying EdgeConnect (k8s-workshop) from namespace dynatrace"
+  kubectl delete -f "${FRAMEWORK_APPS_PATH}/edgeconnect/edgeconnect.yaml" 2>/dev/null || true
+  printInfo "EdgeConnect resources removed from dynatrace namespace."
+}
+
 
 
 
