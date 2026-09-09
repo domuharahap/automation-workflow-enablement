@@ -1,70 +1,49 @@
+--8<-- "snippets/dt-enablement.md"
 
-Below is a curated list of resources to help you get the most out of Dynatrace, Codespaces, and modern development best practices. These links will deepen your understanding and keep you up to date with the latest trends.
+# Resources
 
----
-
-
-### 🚀 Get Started with Dynatrace
-
-- [Create a Free Trial in Dynatrace](https://www.dynatrace.com/signup/)
-- [Dynatrace Documentation](https://docs.dynatrace.com)
+Reference links for everything covered in this workshop.
 
 ---
 
+### EdgeConnect
 
-### 📰 Dynatrace News & Community
-
-- [Dynatrace Blog](https://www.dynatrace.com/news/blog/)
-- [Dynatrace Community](https://community.dynatrace.com/)
-
----
-
-
-### 💡 Coding Best Practices
-
-- [Coding Best Practices (Dynatrace Docs)](https://docs.dynatrace.com/docs/shortlink/best-practices)
-- [Separation of Concerns (Wikipedia)](https://en.wikipedia.org/wiki/Separation_of_concerns)
-- [GitHub Flow: Simple Git Branching Model](https://docs.github.com/en/get-started/quickstart/github-flow)
+| Resource | Description |
+|---|---|
+| [:material-github: Dynatrace-EdgeConnect](https://github.com/domuharahap/Dynatrace-EdgeConnect) | Source YAML manifests and workflow JSON files used in this workshop |
+| [EdgeConnect documentation](https://docs.dynatrace.com/docs/setup-and-configuration/dynatrace-oneagent/oneagent-updatesbest-practices/connectivity/edgeconnect) | Official EdgeConnect setup guide |
+| [Kubernetes Automation with EdgeConnect](https://docs.dynatrace.com/docs/platform-modules/automations/kubernetes-automation) | Enabling K8s automation via EdgeConnect |
 
 ---
 
+### Dynatrace Automation
 
-### 🛠️ Git Strategies & Collaboration
-
-- [Git Strategies and Workflows](https://www.atlassian.com/git/tutorials/comparing-workflows)
-- [Pull Requests and Code Reviews](https://docs.github.com/en/pull-requests)
-
----
-
-
-### 🏗️ Containerization & Cloud-Native Principles
-
-- [Container Design Principles (Docker)](https://docs.docker.com/develop/dev-best-practices/)
-- [Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/)
-- [Why Codespaces? (GitHub Docs)](https://docs.github.com/en/codespaces/overview)
+| Resource | Description |
+|---|---|
+| [Dynatrace Automation Workflows](https://docs.dynatrace.com/docs/platform-modules/automations/workflows) | Workflow authoring reference |
+| [Davis AI problem detection](https://docs.dynatrace.com/docs/platform/davis-ai) | How Davis AI detects and correlates problems |
+| [OAuth Clients](https://docs.dynatrace.com/docs/manage/identity-access-management/oauth-clients) | Creating and managing OAuth clients in Dynatrace |
 
 ---
 
+### Dynatrace Platform
 
-### 🎨 Enhancing User Experience
-
-- [User Experience Best Practices (NNG)](https://www.nngroup.com/articles/definition-user-experience/)
-- [Agentless Real User Monitoring (Dynatrace)](https://www.dynatrace.com/support/help/shortlink/agentless-rum)
-
----
-
-
-### 📈 Observability & Business Insights
-
-- [Business Events in Dynatrace](https://www.dynatrace.com/support/help/shortlink/bizevents)
-- [Observability Explained (Dynatrace Blog)](https://www.dynatrace.com/news/blog/observability-explained/)
+| Resource | Description |
+|---|---|
+| [Create a Free Trial](https://www.dynatrace.com/signup/) | Get a Dynatrace environment |
+| [Dynatrace Documentation](https://docs.dynatrace.com) | Full platform documentation |
+| [Dynatrace Community](https://community.dynatrace.com/) | Community forums and knowledge base |
 
 ---
 
+### Kubernetes & Codespaces
 
-Explore these resources to become more effective with Dynatrace, Codespaces, and modern software engineering.
-
+| Resource | Description |
+|---|---|
+| [Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/) | K8s fundamentals |
+| [GitHub Codespaces Overview](https://docs.github.com/en/codespaces/overview) | Why Codespaces |
+| [Dynatrace Enablement Framework](https://dynatrace-wwse.github.io/codespaces-framework) | The framework powering this workshop |
 
 <div class="grid cards" markdown>
-- [Continue to Repositories →](enablements.md)
+- [What's Next :octicons-arrow-right-24:](whats-next.md)
 </div>
