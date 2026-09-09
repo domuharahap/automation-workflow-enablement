@@ -226,10 +226,13 @@ Validate in Dynatrace:
 ### Trigger the OOM
 
 1. Get the LoadBalancer URL for the demo app:```View - Port```
-2. Open the URL in a browser or curl it to trigger the OOM scenario:
+2. Open the URL in a browser to trigger the OOM scenario:
    ```bash
-   curl http://<EXTERNAL-IP>/usecase.html
+   https://<EXTERNAL-IP>/usecase.html
    ```
+
+   ![Dynatrace Workflow pod stack running](img/portal-simulation-dtpay.png)
+
 3. Watch the pod crash:
    ```bash
    kubectl -n dtpay get pods -w
@@ -243,7 +246,7 @@ Validate in Dynatrace:
    - **Approval email** is sent to the configured approver
 3. Open the approval link in the email
 4. Click **Approve**
-5. The workflow executes `kubectl rollout restart deployment/dtdemo-usecase -n dtusecase`
+5. The workflow executes `kubectl rollout restart deployment/dtdemo-usecase -n dtpay`
 6. A follow-up **Slack confirmation** message is sent
 
 Validate in Dynatrace:
@@ -264,7 +267,7 @@ kubectl -n dtusecase delete pod stuck-pod --force --grace-period=0 2>/dev/null |
 To remove EdgeConnect:
 
 ```bash
-kubectl -n dtusecase delete -f edgeconnect/edgeconnect.yaml
+kubectl -n dynatace delete -f edgeconnect/edgeconnect.yaml
 ```
 
 ---
