@@ -46,7 +46,7 @@ kubectl get pods -n dynatrace | grep edgeconnect
 !!! example "Step-by-step"
 
     1. Open your Dynatrace environment
-    2. Navigate to **Infrastructure > Kubernetes > EdgeConnect**
+    2. Navigate to **Settings > General > External Request > EdgeConnect**
     3. You should see `k8s-workshop` listed with status **Online**
 
 !!! example ""
@@ -54,7 +54,7 @@ kubectl get pods -n dynatrace | grep edgeconnect
 
 !!! example "Step-by-step (continued)"
 
-    4. Navigate to **Infrastructure > Kubernetes > k8s-workshop**
+    4. Navigate to **Settings > Connections > Kubernetes > k8s-workshop**
     5. Validate that `k8s-workshop` shows status **Connected**
 
 !!! example ""

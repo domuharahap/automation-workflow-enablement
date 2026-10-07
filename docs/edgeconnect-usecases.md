@@ -44,7 +44,8 @@ kubectl -n dtusecase get pod stuck-pod
 
     1. In the Dynatrace UI, navigate to **Automations > Workflows**
     2. Click **Import workflow** (top-right corner)
-    3. Download and import the workflow: [pod stack cleanup](workflow/use-case-automation-k8s-pod-cleanup.workflow.json){:download}
+    3. Download and import the workflow: [pod stack cleanup](workflow/use-case-automation-k8s-pod-cleanup.workflow.json){:pods-stuck-cleanup}
+    4. Change the K8s connections and Save Deploy the workflow
 
     The JSON files are also available in the [reference repository](https://github.com/domuharahap/Dynatrace-EdgeConnect).
 
@@ -64,7 +65,20 @@ Open **`[use-case automation] - K8s Pod Cleanup`**:
 ### Step 1.4 — Configure anomaly detection
 
 !!! warning "Demo preparation"
-    Before triggering the scenario, change the Kubernetes anomaly detection sensitivity so the workflow fires quickly during the demo.
+    Before triggering the scenario, change the Kubernetes anomaly detection sensitivity so the workflow fires quickly during the demo. By default, Dynatrace waits 10 minutes before raising a problem, but the `stuck-pod` only hangs for 5 minutes, so the problem would never open.
+
+!!! example "Step-by-step"
+
+    1. In Dynatrace, open **Settings**
+    2. Navigate to **Analyze and alert > Alerts > Workload**
+    3. Under **Pods**, find **Detect pods stuck in terminating** and make sure the toggle is **on**
+    4. Lower the thresholds, for example:
+        - **pod termination stops progressing for at least:** `2` min (default `10`)
+        - **within the last:** `5` min (default `15`)
+    5. Click **Save changes**
+
+!!! tip "Navigation shortcut"
+    Use **Search settings** in the left menu and type `Workload` to jump straight to the page.
 
 !!! example ""
     ![Pod stack anomaly settings](img/pod-stack.png)
