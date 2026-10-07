@@ -1,0 +1,16 @@
+#	Type	Question	A	B	C	D	Correct	Time
+1	MC	EdgeConnect links Dynatrace to your cluster. What kind of connection is it?	A secure reverse tunnel	A public LoadBalancer	A VPN to your laptop	A very patient carrier pigeon	A	20
+2	TF	True or False: your cluster must be exposed to the internet for Workflows to run kubectl.	True	False			B	15
+3	MC	Davis AI spots a stuck pod and the workflow deletes it, no human needed. This mode is...	Zero-touch	Approval-gated	Trial-and-error	Prayer-driven	A	20
+4	MC	The stuck-pod's preStop hook sleeps for how long?	5 seconds	5 minutes	5 hours	Until Monday	B	15
+5	TF	True or False: with default settings, Dynatrace raises the stuck-pod problem before the pod disappears.	True	False			B	20
+6	MC	dtpay has a 512Mi limit. Which JVM flag makes it exit on OOM instead of limping on?	-XX:+ExitOnOutOfMemoryError	-XX:+PleaseDontCrash	-XX:+RunForever	-Xmx=YOLO	A	20
+7	MC	Who detects "Memory resources exhausted" and kicks off the workflow?	Davis AI	A very tired on-call engineer	Clippy	Your cluster's horoscope	A	15
+8	TF	True or False: the OOM workflow restarts the deployment automatically, with no approval.	True	False			B	15
+9	MC	Once approved, restart_deployment runs the classic "turn it off and on again". Which command?	kubectl rollout restart	kubectl delete cluster	kubectl have-you-tried	kubectl panic	A	20
+10	TF	True or False: deployEdgeConnect writes your OAuth credentials into a file on disk.	True	False			B	20
+11	MC	Where do you find, import and manage Workflows in the Dynatrace UI?	Automations > Workflows	Infrastructure > Hosts	Logs > Coffee Machine	Settings > Snacks	A	15
+12	MC	Which part of a workflow decides WHEN it starts running?	The trigger	The task	The connection	The coffee break	A	15
+13	TF	True or False: a workflow is built from tasks, such as sending a Slack message or calling the K8s API.	True	False			A	15
+14	TF	True or False: a workflow you imported does nothing until you save and activate it.	True	False			A	15
+15	MC	Where do you check which tasks succeeded or failed in a past workflow run?	Workflow execution history	Your browser history	A crystal ball	Slack mute settings	A	15
