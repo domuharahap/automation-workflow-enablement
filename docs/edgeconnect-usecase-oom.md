@@ -83,6 +83,20 @@ Open **`[use case automation] oom remediation w k8s`**:
 - Navigate to **Automations > Workflows** → check execution history and individual task states
 - Navigate to **Infrastructure > Kubernetes** → verify the deployment restarted successfully
 
+### Knowledge check
+
+!!! question "Question 1"
+    What makes the `dtpay` pod crash and restart when you click the trigger button, rather than just slow down?
+
+    ??? success "Show answer"
+        The `/usecase.html` endpoint allocates memory until it exceeds the container's **512Mi** memory limit. The JVM is started with `-XX:+ExitOnOutOfMemoryError`, so on an out-of-memory error the process exits immediately and the pod crashes instead of lingering in a degraded state. Davis AI then detects **Memory resources exhausted**.
+
+!!! question "Question 2"
+    How does this workflow differ from the Pod Stack use case, and which tasks implement that difference?
+
+    ??? success "Show answer"
+        It is **approval-gated** rather than zero-touch. `send_notification` posts to Slack, then `request_approval` emails the approver, and only after they click **Approve** does `restart_deployment` run `kubectl rollout restart deployment/dtdemo-usecase -n dtpay` through EdgeConnect. A follow-up Slack confirmation is sent afterwards. A restart affects the running service, so a human decides before it happens.
+
 <div class="grid cards" markdown>
 - [Continue to Cleanup :octicons-arrow-right-24:](cleanup.md)
 </div>

@@ -44,7 +44,7 @@ kubectl -n dtusecase get pod stuck-pod
 
     1. In the Dynatrace UI, navigate to **Automations > Workflows**
     2. Click **Import workflow** (top-right corner)
-    3. Download and import the workflow: [pod stack cleanup](workflow/use-case-automation-k8s-pod-cleanup.workflow.json){:pods-stuck-cleanup}
+    3. Download and import this workflow here: [pod stack cleanup](workflow/use-case-automation-k8s-pod-cleanup.workflow.json){:pods-stuck-cleanup}
     4. Change the K8s connections and Save Deploy the workflow
 
     The JSON files are also available in the [reference repository](https://github.com/domuharahap/Dynatrace-EdgeConnect).
@@ -109,6 +109,20 @@ kubectl -n dtusecase get pod stuck-pod
 
 !!! example ""
     ![Workflow run termination success](img/workflow-run-termination-success.png)
+
+### Knowledge check
+
+!!! question "Question 1"
+    The `stuck-pod` hangs for only 5 minutes, yet the workflow must fire during the demo. Which setting did you change, and why was it necessary?
+
+    ??? success "Show answer"
+        The **Detect pods stuck in terminating** thresholds under **Settings > Analyze and alert > Alerts > Workload**. By default Dynatrace waits 10 minutes (within the last 15) before raising a problem. The pod's `preStop` hook only blocks for 5 minutes, so with the defaults the pod would be gone before a problem opened and the workflow would never trigger. Lowering the thresholds (e.g. 2 min within 5 min) lets Davis AI raise the problem in time.
+
+!!! question "Question 2"
+    Why is this use case called "zero-touch", and what does the `delete_pod` task rely on to reach the cluster?
+
+    ??? success "Show answer"
+        The workflow runs end to end without any human approval: Davis AI detects the problem, the workflow fires automatically, force-deletes the pod, and Davis AI closes the problem. The `delete_pod` task uses the **EdgeConnect K8s connector** (instance `k8s-workshop`) to run the delete against the cluster.
 
 <div class="grid cards" markdown>
 - [Continue to Use Case 2: Out of Memory Pod :octicons-arrow-right-24:](edgeconnect-usecase-oom.md)
