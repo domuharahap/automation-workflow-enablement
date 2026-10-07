@@ -46,7 +46,7 @@ Open **`[use case automation] oom remediation w k8s`**:
 
 !!! example "Step-by-step"
 
-    1. In VS Code, open **Ports** → find the `dtpay` frontend port
+    1. In VS Code, open **Ports** → find the `dtpay` frontend port, and make the port public accessible
     2. Open the exposed URL in a browser:
 
     ```
