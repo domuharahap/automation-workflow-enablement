@@ -2,7 +2,7 @@
 
 # Deployment
 
-This section covers deploying EdgeConnect, standing up the simulation workloads, and importing the automation workflows into Dynatrace.
+This section covers deploying EdgeConnect (RBAC + CRD) and verifying that it is connected to Dynatrace. Everything specific to a scenario lives in [Use Cases](edgeconnect-usecases.md).
 
 ---
 
@@ -62,83 +62,8 @@ kubectl get pods -n dynatrace | grep edgeconnect
 
 ---
 
-## Part 4 — Deploy the Simulation Workloads
-
-These workloads intentionally trigger the failure scenarios that the automation workflows will remediate.
-
-### Step 4.1 — Stuck pod simulation
-
-```bash
-cd .devcontainer/apps
-kubectl create ns dtusecase
-kubectl -n dtusecase apply -f podtermination/podtermination-usecase.yaml
-```
-
-!!! info ""
-    This creates a `busybox` pod named `stuck-pod` with a `preStop` hook that sleeps 300 seconds, simulating a pod stuck in `Terminating` state.
-
-### Step 4.2 — dtpay application (OOM simulation)
-
-```bash
-deployDtpay
-```
-
-!!! info ""
-    This deploys the `dtpay` applications in the `dtpay` namespace. The container is configured with:
-
-    - Memory limit: `512Mi`
-    - JVM flag: `-XX:+ExitOnOutOfMemoryError`
-    - A `/usecase.html` load endpoint that allocates memory until the pod crashes
-
-### Step 4.3 — Verify workloads are running
-
-```bash
-kubectl get all -n dtusecase
-kubectl get all -n dtpay
-kubectl -n dtusecase get pod stuck-pod
-```
-
----
-
-## Part 5 — Import the Automation Workflows
-
-### Step 5.1 — Import workflow files
-
-!!! example "Step-by-step"
-
-    1. In the Dynatrace UI, navigate to **Automations > Workflows**
-    2. Click **Import workflow** (top-right corner)
-    3. Download and Import workflow ![pod stack cleanup](workflow/use-case-automation-k8s-pod-cleanup.workflow.json){:download}
-    4. Download and Import worklfo  ![Automate restart pods](workflow/use-case-automation-oom-remediation-w-k8s.workflow.json){:download}
-
-    These JSON files are available in the [reference repository](https://github.com/domuharahap/Dynatrace-EdgeConnect).
-
-### Step 5.2 — Configure the pod cleanup workflow
-
-Open **`[use-case automation] - K8s Pod Cleanup`**:
-
-!!! example "Step-by-step"
-
-    1. Click the **`delete_pod`** task
-    2. Confirm the EdgeConnect instance is set to `k8s-workshop`
-    3. Save and **Activate** the workflow
-
-!!! example ""
-    ![Workflow pod stack](img/workflow-pod-stack.png)
-
-### Step 5.3 — Configure the OOM workflow
-
-Open **`[use case automation] oom remediation w k8s`**:
-
-!!! example "Step-by-step"
-
-    1. Click the **`send_notification`** task → update the Slack connection and channel to your own
-    2. Click the **`request_approval`** task → update the approver email/user ID
-    3. Click the **`restart_deployment`** task → confirm the EdgeConnect instance is set to `k8s-workshop`
-    4. Save and **Activate** the workflow
-
-!!! tip "All set"
-    With both workflows imported and activated, the environment is ready. Proceed to the Use Cases section to trigger and validate the automation scenarios.
+!!! tip "EdgeConnect is ready"
+    The simulation workloads, workflow imports, and workflow configuration are part of each use case, so you can run them independently.
 
 <div class="grid cards" markdown>
 - [Continue to Use Cases :octicons-arrow-right-24:](edgeconnect-usecases.md)
