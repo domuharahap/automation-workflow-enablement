@@ -6,7 +6,9 @@ nav:
   - 'About': index.md
   - 'Getting Started': getting-started.md
   - 'Deployment': edgeconnect-deployment.md
-  - 'Use Cases': edgeconnect-usecases.md
+  - 'Use Cases':
+      - 'Pod Stack': edgeconnect-usecases.md
+      - 'Out of Memory Pod': edgeconnect-usecase-oom.md
   - 'Cleanup': cleanup.md
   - 'Resources': resources.md
   - "What's Next": whats-next.md

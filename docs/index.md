@@ -62,7 +62,7 @@ Kubernetes API Server
 |---|---|
 | [Getting Started](getting-started.md) | Prerequisites, OAuth Client setup, Codespace launch |
 | [Deployment](edgeconnect-deployment.md) | Deploy and verify EdgeConnect |
-| [Use Cases](edgeconnect-usecases.md) | Two self-contained use cases: simulation, workflow import, configuration, trigger, and validation |
+| [Use Cases](edgeconnect-usecases.md) | Two self-contained use cases ([Pod Stack](edgeconnect-usecases.md), [Out of Memory Pod](edgeconnect-usecase-oom.md)): simulation, workflow import, configuration, trigger, and validation |
 | [Cleanup](cleanup.md) | Remove all workshop resources |
 | [Resources](resources.md) | Reference links and further reading |
 
