@@ -1,0 +1,130 @@
+{
+  "id": "8df6dac1-c90c-44ae-8fe3-d9d408ff2277",
+  "title": "[use case automation] oom remediation w k8s",
+  "description": "",
+  "actor": "4b684d75-9879-4dfd-b27d-6627e553fd44",
+  "owner": "4b684d75-9879-4dfd-b27d-6627e553fd44",
+  "ownerType": "USER",
+  "isPrivate": true,
+  "schemaVersion": 3,
+  "trigger": {
+    "eventTrigger": {
+      "isActive": true,
+      "filterQuery": "event.kind == \"DAVIS_EVENT\" AND\nevent.category == \"RESOURCE_CONTENTION\"\nAND event.name == \"Memory resources exhausted\"",
+      "uniqueExpression": null,
+      "triggerConfiguration": {
+        "type": "event",
+        "value": {
+          "query": "event.kind == \"DAVIS_EVENT\" AND\nevent.category == \"RESOURCE_CONTENTION\"\nAND event.name == \"Memory resources exhausted\"",
+          "eventType": "events"
+        }
+      }
+    }
+  },
+  "result": null,
+  "type": "STANDARD",
+  "input": {},
+  "hourlyExecutionLimit": 1000,
+  "guide": null,
+  "tasks": {
+    "job_done_message": {
+      "name": "job_done_message",
+      "input": {
+        "channel": "C07GHBKNJBY",
+        "message": "Deployment restart for dtUseCase",
+        "reaction": [],
+        "connection": "vu9U3hXa3q0AAAABAB5hcHA6ZHluYXRyYWNlLnNsYWNrOmNvbm5lY3Rpb24ABnRlbmFudAAGdGVuYW50ACQ4ZGIwYzQyZS1mODc4LTMyZjMtYTQ2Mi1jMDc2ZWY4N2I4NWO-71TeFdrerQ",
+        "channelType": "id",
+        "executionDate": "{{ execution().started_at }}",
+        "appendToThread": "{{ result(\"send_notification\")[\"threadTs\"] }}",
+        "replyBroadcast": false,
+        "selectedRequestType": 0,
+        "attachmentToggleValue": "none"
+      },
+      "action": "dynatrace.slack:slack-send-message",
+      "position": {
+        "x": 0,
+        "y": 4
+      },
+      "conditions": {
+        "states": {
+          "restart_deployment": "OK"
+        }
+      },
+      "description": "Send a message to a Slack workspace",
+      "predecessors": [
+        "restart_deployment"
+      ]
+    },
+    "request_approval": {
+      "name": "request_approval",
+      "input": {
+        "message": "A workflow task requires your approval to continue processing. Please approve or decline this request.",
+        "recipients": {
+          "userIds": [
+            "4b684d75-9879-4dfd-b27d-6627e553fd44"
+          ],
+          "groupIds": []
+        }
+      },
+      "action": "dynatrace.automations:request-approval",
+      "position": {
+        "x": 0,
+        "y": 2
+      },
+      "conditions": {
+        "states": {
+          "send_notification": "OK"
+        }
+      },
+      "description": "Request approval from users in Dynatrace.",
+      "predecessors": [
+        "send_notification"
+      ]
+    },
+    "send_notification": {
+      "name": "send_notification",
+      "input": {
+        "channel": "C07GHBKNJBY",
+        "message": "Notification sample for oom. change ltr for message",
+        "reaction": [],
+        "connection": "vu9U3hXa3q0AAAABAB5hcHA6ZHluYXRyYWNlLnNsYWNrOmNvbm5lY3Rpb24ABnRlbmFudAAGdGVuYW50ACQ4ZGIwYzQyZS1mODc4LTMyZjMtYTQ2Mi1jMDc2ZWY4N2I4NWO-71TeFdrerQ",
+        "channelType": "id",
+        "executionDate": "{{ execution().started_at }}",
+        "appendToThread": false,
+        "replyBroadcast": false,
+        "selectedRequestType": 0,
+        "attachmentToggleValue": "none"
+      },
+      "action": "dynatrace.slack:slack-send-message",
+      "position": {
+        "x": 0,
+        "y": 1
+      },
+      "description": "Send a message to a Slack workspace",
+      "predecessors": []
+    },
+    "restart_deployment": {
+      "name": "restart_deployment",
+      "input": {
+        "name": "dtdemo-usecase",
+        "namespace": "dtusecase",
+        "connection": "vu9U3hXa3q0AAAABAC1hcHA6ZHluYXRyYWNlLmt1YmVybmV0ZXMuY29ubmVjdG9yOmNvbm5lY3Rpb24ABnRlbmFudAAGdGVuYW50ACQxYjZlODRlNy0yYmFmLTNlZTEtYmQ4Ni00ZjRmMWE4ZjIzMTK-71TeFdrerQ"
+      },
+      "action": "dynatrace.kubernetes.connector:restart-deployment",
+      "position": {
+        "x": 0,
+        "y": 3
+      },
+      "conditions": {
+        "states": {
+          "request_approval": "OK"
+        }
+      },
+      "description": "Restart a Kubernetes deployment",
+      "predecessors": [
+        "request_approval"
+      ]
+    }
+  }
+}

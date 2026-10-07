@@ -1,0 +1,73 @@
+{
+  "id": "058f3d42-e887-4614-8856-29de2250e54d",
+  "title": "[use-case automation] - K8s Pod Cleanup",
+  "description": "",
+  "actor": "4b684d75-9879-4dfd-b27d-6627e553fd44",
+  "owner": "4b684d75-9879-4dfd-b27d-6627e553fd44",
+  "ownerType": "USER",
+  "isPrivate": true,
+  "schemaVersion": 3,
+  "trigger": {
+    "eventTrigger": {
+      "isActive": true,
+      "filterQuery": "event.kind == \"DAVIS_EVENT\"\nAND event.provider == \"KUBERNETES_ANOMALY_DETECTION\"\nAND event.category == \"RESOURCE_CONTENTION\"\nAND event.name == \"Pods stuck in terminating\"\n",
+      "uniqueExpression": null,
+      "triggerConfiguration": {
+        "type": "event",
+        "value": {
+          "query": "event.kind == \"DAVIS_EVENT\"\nAND event.provider == \"KUBERNETES_ANOMALY_DETECTION\"\nAND event.category == \"RESOURCE_CONTENTION\"\nAND event.name == \"Pods stuck in terminating\"\n",
+          "eventType": "events"
+        }
+      }
+    }
+  },
+  "result": null,
+  "type": "STANDARD",
+  "input": {},
+  "hourlyExecutionLimit": 1000,
+  "guide": null,
+  "tasks": {
+    "delete_pod": {
+      "name": "delete_pod",
+      "input": {
+        "force": true,
+        "resource": {
+          "name": "{{event()[\"k8s.workload.name\"]}}",
+          "type": {
+            "kind": "Pod",
+            "name": "pods",
+            "verbs": [
+              "create",
+              "delete",
+              "deletecollection",
+              "get",
+              "list",
+              "patch",
+              "update",
+              "watch"
+            ],
+            "apiVersion": "v1",
+            "namespaced": true,
+            "shortNames": [
+              "po"
+            ]
+          },
+          "namespace": "{{event()[\"dt.entity.cloud_application_namespace.name\"]}}"
+        },
+        "connection": "vu9U3hXa3q0AAAABAC1hcHA6ZHluYXRyYWNlLmt1YmVybmV0ZXMuY29ubmVjdG9yOmNvbm5lY3Rpb24ABnRlbmFudAAGdGVuYW50ACQxYjZlODRlNy0yYmFmLTNlZTEtYmQ4Ni00ZjRmMWE4ZjIzMTK-71TeFdrerQ"
+      },
+      "action": "dynatrace.kubernetes.connector:delete",
+      "position": {
+        "x": 0,
+        "y": 1
+      },
+      "conditions": {
+        "else": "STOP",
+        "custom": "{{event()[\"k8s.workload.kind\"]==\"pod\"}}\n ",
+        "states": {}
+      },
+      "description": "Delete Kubernetes resources",
+      "predecessors": []
+    }
+  }
+}

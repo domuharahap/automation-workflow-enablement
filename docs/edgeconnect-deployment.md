@@ -108,8 +108,8 @@ kubectl -n dtusecase get pod stuck-pod
 
     1. In the Dynatrace UI, navigate to **Automations > Workflows**
     2. Click **Import workflow** (top-right corner)
-    3. Import `use-case-automation-k8s-pod-cleanup.workflow.json`
-    4. Import `use-case-automation-oom-remediation-w-k8s.workflow.json`
+    3. Download and Import workflow ![pod stack cleanup](use-case-automation-k8s-pod-cleanup.workflow.json){:download}
+    4. Download and Import worklfo  ![Automate restart pods](use-case-automation-oom-remediation-w-k8s.workflow.json){:download}
 
     These JSON files are available in the [reference repository](https://github.com/domuharahap/Dynatrace-EdgeConnect).
 
