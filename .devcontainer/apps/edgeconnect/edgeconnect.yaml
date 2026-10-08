@@ -49,6 +49,50 @@ subjects:
 
 ---
 
+# Permissions in the dtpay namespace (workflow restarts deployments there)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: edgeconnect-role
+  namespace: dtpay
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["patch", "get", "delete"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "create", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "patch", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["patch", "get", "create", "delete"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: edgeconnect-rb
+  namespace: dtpay
+roleRef:
+  kind: Role
+  name: edgeconnect-role
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: edgeconnect-sa
+  namespace: dynatrace
+
+---
+
 apiVersion: v1
 kind: Secret
 metadata:

@@ -14,3 +14,8 @@
 13	TF	True or False: a workflow is built from tasks, such as sending a Slack message or calling the K8s API.	True	False			A	15
 14	TF	True or False: a workflow you imported does nothing until you save and activate it.	True	False			A	15
 15	MC	Where do you check which tasks succeeded or failed in a past workflow run?	Workflow execution history	Your browser history	A crystal ball	Slack mute settings	A	15
+16	MC	Why do teams automate remediation with Davis AI and Workflows?	Faster fixes, fewer 3 AM pages	To give the on-call a pet robot	So dashboards can feel important	To let AI take over the coffee machine	A	15
+17	TF	True or False: a workflow can pause and wait for a human to approve before a risky action.	True	False			A	15
+18	MC	Why add an approval step before restarting a production deployment?	A human confirms before service impact	The AI gets stage fright	Davis needs a hug first	Robots love paperwork	A	20
+19	TF	True or False: a workflow can only start when someone clicks the Run button.	True	False			B	15
+20	MC	AI plus automation works best with guardrails. Which one is a real guardrail?	Approval gate + least-privilege RBAC	Cluster-admin for the AI, just in case	Naming the pod "please-work"	Hoping really, really hard	A	20
