@@ -81,6 +81,8 @@ See [docs/edgeconnect-workshop.md](docs/edgeconnect-workshop.md) for the full st
 
 ## Required Codespace Secrets
 
+These are Dynatrace secrets that must be available when you create or start the Codespace. Add them as Codespaces secrets (GitHub → Settings → Codespaces → Secrets) and grant this repository access to them **before** creating or starting the Codespace.
+
 | Secret | Description |
 |---|---|
 | `DT_ENVIRONMENT` | Dynatrace platform URL, e.g. `https://abc123.apps.dynatrace.com` |
@@ -89,6 +91,15 @@ See [docs/edgeconnect-workshop.md](docs/edgeconnect-workshop.md) for the full st
 | `DT_CLIENT_ID` | OAuth Client ID for EdgeConnect provisioning — format: `dt0s02.XXXX` |
 | `DT_CLIENT_SECRET` | OAuth Client Secret paired with `DT_CLIENT_ID` |
 | `DT_URN_ACCOUNT` | Account URN for OAuth resource scope — format: `urn:dtaccount:xxxx-xxxx` |
+
+## Token & Permission Requirements
+
+Make sure the tokens and OAuth client above have the permissions needed for the workshop components:
+
+| Component | Reference |
+|---|---|
+| Workflows | [Workflows permissions](https://docs.dynatrace.com/docs/shortlink/workflows) |
+| EdgeConnect | [EdgeConnect user permissions](https://docs.dynatrace.com/docs/shortlink/edgeconnect#userpermissions) |
 
 ## Documentation
 

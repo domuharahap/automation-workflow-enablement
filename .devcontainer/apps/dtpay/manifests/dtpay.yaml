@@ -19,7 +19,7 @@ spec:
         app: backend-usecase
     spec:
       containers:
-        - image: domuharahap/dtdemo-usecase:backend.4.2
+        - image: domuharahap/dtdemo-usecase:backend
           name: backend-usecase
           resources:
             limits:
@@ -104,7 +104,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: domuharahap/dtdemo-usecase:frontend.4.5
+          image: domuharahap/dtdemo-usecase:frontend
           ports:
             - containerPort: 80
           volumeMounts:
