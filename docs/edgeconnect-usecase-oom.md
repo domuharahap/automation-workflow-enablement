@@ -4,26 +4,10 @@
 
 The `dtpay` application is pushed past its memory limit and crashes. Davis AI detects it and the workflow asks for approval before restarting the deployment.
 
-### Step 2.1 — Deploy the simulation
+!!! note "Prerequisite"
+    The `dtpay` application must already be deployed. See [Deploy dtpay](edgeconnect-deployment.md#part-3-deploy-dtpay-simulation-application).
 
-```bash
-deployDtpay
-```
-
-!!! info ""
-    This deploys the `dtpay` application in the `dtpay` namespace. The container is configured with:
-
-    - Memory limit: `512Mi`
-    - JVM flag: `-XX:+ExitOnOutOfMemoryError`
-    - A `/usecase.html` load endpoint that allocates memory until the pod crashes
-
-Verify it is running:
-
-```bash
-kubectl get all -n dtpay
-```
-
-### Step 2.2 — Import the workflow
+### Step 2.1 — Import the workflow
 
 !!! example "Step-by-step"
 
@@ -31,7 +15,7 @@ kubectl get all -n dtpay
     2. Click **Import workflow** (top-right corner)
     3. Download and import the workflow: [automate restart pods](workflow/use-case-automation-oom-remediation-w-k8s.workflow.json){:download}
 
-### Step 2.3 — Configure the workflow
+### Step 2.2 — Configure the workflow
 
 Open **`[use case automation] oom remediation w k8s`**:
 
@@ -42,7 +26,7 @@ Open **`[use case automation] oom remediation w k8s`**:
     3. Click the **`restart_deployment`** task → confirm the EdgeConnect instance is set to `k8s-workshop`
     4. Save and **Activate** the workflow
 
-### Step 2.4 — Trigger the OOM
+### Step 2.3 — Trigger the OOM
 
 !!! example "Step-by-step"
 
@@ -65,7 +49,7 @@ Open **`[use case automation] oom remediation w k8s`**:
     kubectl -n dtpay get pods -w
     ```
 
-### Step 2.5 — Validate the approval-gated workflow
+### Step 2.4 — Validate the approval-gated workflow
 
 !!! success "Expected flow"
     1. Davis AI detects **Memory resources exhausted**

@@ -6,11 +6,36 @@ This section covers deploying EdgeConnect (RBAC + CRD) and verifying that it is 
 
 ---
 
-## Part 3 — Deploy EdgeConnect (RBAC + CRD)
+## Part 3 — Deploy dtpay (simulation application)
+
+The OOM use case needs the `dtpay` application running in the cluster. Deploy it here so the use cases can start straight from the workflow.
+
+### Step 3.1 — Deploy dtpay
+
+```bash
+deployDtpay
+```
+
+!!! info ""
+    This deploys the `dtpay` application in the `dtpay` namespace. The container is configured with:
+
+    - Memory limit: `512Mi`
+    - JVM flag: `-XX:+ExitOnOutOfMemoryError`
+    - A `/usecase.html` load endpoint that allocates memory until the pod crashes
+
+### Step 3.2 — Verify dtpay is running
+
+```bash
+kubectl get all -n dtpay
+```
+
+---
+
+## Part 4 — Deploy EdgeConnect (RBAC + CRD)
 
 The `deployEdgeConnect` function reads your credentials directly from environment variables set as Codespace secrets (`DT_CLIENT_ID`, `DT_CLIENT_SECRET`, `DT_ENVIRONMENT`, `DT_URN_ACCOUNT`), substitutes them into the manifest in memory, and applies everything in one step — no manual file editing required.
 
-### Step 3.1 — Deploy EdgeConnect
+### Step 4.1 — Deploy EdgeConnect
 
 ```bash
 deployEdgeConnect
@@ -28,7 +53,7 @@ deployEdgeConnect
         - `EdgeConnect` CRD resource enabling `kubernetesAutomation`
     5. Prints the EdgeConnect resource and pod status immediately after apply
 
-### Step 3.2 — Verify EdgeConnect is running
+### Step 4.2 — Verify EdgeConnect is running
 
 ```bash
 kubectl get edgeconnect -n dynatrace
@@ -41,7 +66,7 @@ kubectl get pods -n dynatrace | grep edgeconnect
 !!! example ""
     ![EdgeConnect Deployment Status](img/edgeconnect-deployment-status.png)
 
-### Step 3.3 — Confirm registration in Dynatrace
+### Step 4.3 — Confirm registration in Dynatrace
 
 !!! example "Step-by-step"
 
@@ -63,7 +88,7 @@ kubectl get pods -n dynatrace | grep edgeconnect
 ---
 
 !!! tip "EdgeConnect is ready"
-    The simulation workloads, workflow imports, and workflow configuration are part of each use case, so you can run them independently.
+    The workflow imports and workflow configuration are part of each use case, so you can run them independently.
 
 <div class="grid cards" markdown>
 - [Continue to Use Cases :octicons-arrow-right-24:](edgeconnect-usecases.md)
