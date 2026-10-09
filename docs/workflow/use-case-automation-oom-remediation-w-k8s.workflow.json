@@ -2,16 +2,14 @@
   "id": "8df6dac1-c90c-44ae-8fe3-d9d408ff2277",
   "title": "[use case automation] oom remediation w k8s",
   "description": "",
-  "actor": "4b684d75-9879-4dfd-b27d-6627e553fd44",
-  "owner": "4b684d75-9879-4dfd-b27d-6627e553fd44",
+  "actor": "6e219cfe-3a5a-4432-bfbe-f1597f985bcd",
+  "owner": "6e219cfe-3a5a-4432-bfbe-f1597f985bcd",
   "ownerType": "USER",
   "isPrivate": true,
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "trigger": {
     "eventTrigger": {
       "isActive": true,
-      "filterQuery": "event.kind == \"DAVIS_EVENT\" AND\nevent.category == \"RESOURCE_CONTENTION\"\nAND event.name == \"Memory resources exhausted\"",
-      "uniqueExpression": null,
       "triggerConfiguration": {
         "type": "event",
         "value": {
@@ -27,13 +25,42 @@
   "hourlyExecutionLimit": 1000,
   "guide": null,
   "tasks": {
+    "dtpay_status": {
+      "name": "dtpay_status",
+      "input": {
+        "url": "https://generated-codespace-domain-80.app.github.dev/api/use-case-oom",
+        "method": "GET",
+        "failOnResponseCodes": "400-599"
+      },
+      "retry": {
+        "count": 10,
+        "delay": 5,
+        "failedLoopIterationsOnly": true
+      },
+      "action": "dynatrace.automations:http-function",
+      "active": false,
+      "position": {
+        "x": -1,
+        "y": 4
+      },
+      "conditions": {
+        "states": {
+          "restart_deployment": "OK"
+        }
+      },
+      "description": "Issue an HTTP request to any API.",
+      "waitBefore": 10,
+      "predecessors": [
+        "restart_deployment"
+      ]
+    },
     "job_done_message": {
       "name": "job_done_message",
       "input": {
         "channel": "C07GHBKNJBY",
         "message": "Deployment restart for dtUseCase",
         "reaction": [],
-        "connection": "vu9U3hXa3q0AAAABAB5hcHA6ZHluYXRyYWNlLnNsYWNrOmNvbm5lY3Rpb24ABnRlbmFudAAGdGVuYW50ACQ4ZGIwYzQyZS1mODc4LTMyZjMtYTQ2Mi1jMDc2ZWY4N2I4NWO-71TeFdrerQ",
+        "connection": "vu9U3hXa3q0AAAABAB5hcHA6ZHluYXRyYWNlLnNsYWNrOmNvbm5lY3Rpb24ABnRlbmFudAAGdGVuYW50ACQzYTE2MThlNy1mZWQ1LTM1MGEtYWRiYS1kY2UxOWY0YmMzOTa-71TeFdrerQ",
         "channelType": "id",
         "executionDate": "{{ execution().started_at }}",
         "appendToThread": "{{ result(\"send_notification\")[\"threadTs\"] }}",
@@ -48,12 +75,14 @@
       },
       "conditions": {
         "states": {
+          "dtpay_status": "OK",
           "restart_deployment": "OK"
         }
       },
       "description": "Send a message to a Slack workspace",
       "predecessors": [
-        "restart_deployment"
+        "restart_deployment",
+        "dtpay_status"
       ]
     },
     "request_approval": {
@@ -62,7 +91,7 @@
         "message": "A workflow task requires your approval to continue processing. Please approve or decline this request.",
         "recipients": {
           "userIds": [
-            "4b684d75-9879-4dfd-b27d-6627e553fd44"
+            "6e219cfe-3a5a-4432-bfbe-f1597f985bcd"
           ],
           "groupIds": []
         }
@@ -88,7 +117,7 @@
         "channel": "C07GHBKNJBY",
         "message": "Notification sample for oom. change ltr for message",
         "reaction": [],
-        "connection": "vu9U3hXa3q0AAAABAB5hcHA6ZHluYXRyYWNlLnNsYWNrOmNvbm5lY3Rpb24ABnRlbmFudAAGdGVuYW50ACQ4ZGIwYzQyZS1mODc4LTMyZjMtYTQ2Mi1jMDc2ZWY4N2I4NWO-71TeFdrerQ",
+        "connection": "vu9U3hXa3q0AAAABAB5hcHA6ZHluYXRyYWNlLnNsYWNrOmNvbm5lY3Rpb24ABnRlbmFudAAGdGVuYW50ACQzYTE2MThlNy1mZWQ1LTM1MGEtYWRiYS1kY2UxOWY0YmMzOTa-71TeFdrerQ",
         "channelType": "id",
         "executionDate": "{{ execution().started_at }}",
         "appendToThread": false,
@@ -107,9 +136,9 @@
     "restart_deployment": {
       "name": "restart_deployment",
       "input": {
-        "name": "dtdemo-usecase",
-        "namespace": "dtusecase",
-        "connection": "vu9U3hXa3q0AAAABAC1hcHA6ZHluYXRyYWNlLmt1YmVybmV0ZXMuY29ubmVjdG9yOmNvbm5lY3Rpb24ABnRlbmFudAAGdGVuYW50ACQxYjZlODRlNy0yYmFmLTNlZTEtYmQ4Ni00ZjRmMWE4ZjIzMTK-71TeFdrerQ"
+        "name": "backend-usecase",
+        "namespace": "dtpay",
+        "connection": "vu9U3hXa3q0AAAABAC1hcHA6ZHluYXRyYWNlLmt1YmVybmV0ZXMuY29ubmVjdG9yOmNvbm5lY3Rpb24ABnRlbmFudAAGdGVuYW50ACQ2YTQ4ZjcxNC0yYmQ5LTMwMzYtYTk3Ni00MDRjYTUxOWJhMjO-71TeFdrerQ"
       },
       "action": "dynatrace.kubernetes.connector:restart-deployment",
       "position": {
